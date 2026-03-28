@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserProfile {
+  id                  Int      @id @default(1)
+  name                String   @default("Braden")
+  weightLbs           Float
+  heightStr           String
+  age                 Int
+  sex                 String
+  benchMaxLbs         Float?
+  squatMaxLbs         Float?
+  deadliftMaxLbs      Float?
+  ohpMaxLbs           Float?
+  legPressMaxLbs      Float?
+  tbarRowWeightLbs    Float?
+  trainingDaysPerWeek Int
+  sessionLengthMin    Int
+  equipment           String
+  primaryGoal         String
+  secondaryGoal       String?
+  injuryNotes         String?
+  restrictedMovements String?
+  availableEquipment  String   @default("[]")
+  nutritionPhase      String?
+  dailyCalorieTarget  Int?
+  proteinTargetG      Int?
+  carbTargetG         Int?
+  fatTargetG          Int?
+  mealsPerDay         Int?
+  nutritionNotes      String?
+  nutritionCalculated Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Program {
+  id          Int              @id @default(autoincrement())
+  name        String
+  weeks       Int              @default(12)
+  promptType  String           @default("program")
+  content     String
+  isActive    Boolean          @default(true)
+  startDate   DateTime?
+  createdAt   DateTime         @default(now())
+  sessions    WorkoutSession[]
+}
+
+model WorkoutSession {
+  id          Int           @id @default(autoincrement())
+  programId   Int?
+  program     Program?      @relation(fields: [programId], references: [id])
+  week        Int?
+  day         Int?
+  sessionName String?
+  date        DateTime      @default(now())
+  completed   Boolean       @default(false)
+  durationMin Int?
+  notes       String?
+  exercises   ExerciseLog[]
+}
+
+model ExerciseLog {
+  id            Int            @id @default(autoincrement())
+  sessionId     Int
+  session       WorkoutSession @relation(fields: [sessionId], references: [id])
+  exerciseName  String
+  muscleGroup   String?
+  sets          Int
+  reps          Int
+  weightLbs     Float
+  rpe           Float?
+  tempo         String?
+  notes         String?
+  createdAt     DateTime       @default(now())
+}
+
+model WeeklyCheckIn {
+  id              Int      @id @default(autoincrement())
+  date            DateTime @default(now())
+  weekNumber      Int?
+  bodyweightLbs   Float
+  photoTaken      Boolean  @default(false)
+  sleepHours      Float
+  sleepQuality    Int
+  stressLevel     String
+  energyScore     Int
+  recoveryScore   Int
+  avgCalories     Int?
+  avgProteinG     Int?
+  nutritionNotes  String?
+  wins            String?
+  struggles       String?
+  notes           String?
+}
+
+model PlateauLog {
+  id            Int      @id @default(autoincrement())
+  detectedAt    DateTime @default(now())
+  exerciseName  String
+  stalledWeeks  Int
+  lastWeight    Float
+  aiAnalysis    String?
+  resolved      Boolean  @default(false)
+  resolvedAt    DateTime?
+  resolvedNotes String?
+}
+
+model AIResponse {
+  id          Int      @id @default(autoincrement())
+  promptType  String
+  inputData   String?
+  content     String
+  model       String   @default("claude-sonnet-4-6")
+  createdAt   DateTime @default(now())
+}
