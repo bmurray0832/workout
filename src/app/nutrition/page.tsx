@@ -94,7 +94,7 @@ export default function NutritionPage() {
         <button onClick={() => router.push("/")} className="text-gray-400 hover:text-white text-sm">← Dashboard</button>
         <span className="font-semibold text-sm">Nutrition</span>
         <div className="flex gap-2">
-          {hasActivePlan && <button onClick={() => router.push("/nutrition/plan")} className="text-xs text-blue-400 hover:text-blue-300 border border-blue-800 px-3 py-1.5 rounded-lg">View Meal Plan</button>}
+          {hasActivePlan && <button onClick={() => router.push("/nutrition/plan")} className="text-xs text-blue-400 hover:text-blue-300 border border-blue-800 px-3 py-1.5 rounded-lg">View Nutrition Guide</button>}
         </div>
       </header>
       <div className="px-4 py-6 max-w-lg mx-auto w-full space-y-5">
@@ -104,7 +104,7 @@ export default function NutritionPage() {
           <span className="text-gray-700">→</span>
           <span className={`px-3 py-1 rounded-full border ${nutritionOnboarded ? "border-green-700 text-green-400 bg-green-950" : "border-gray-700 text-gray-500"}`}>{nutritionOnboarded ? "2. Preferences Set" : "2. Food Preferences"}</span>
           <span className="text-gray-700">→</span>
-          <span className={`px-3 py-1 rounded-full border ${hasActivePlan ? "border-green-700 text-green-400 bg-green-950" : "border-gray-700 text-gray-500"}`}>{hasActivePlan ? "3. Plan Ready" : "3. Meal Plan"}</span>
+          <span className={`px-3 py-1 rounded-full border ${hasActivePlan ? "border-green-700 text-green-400 bg-green-950" : "border-gray-700 text-gray-500"}`}>{hasActivePlan ? "3. Guide Ready" : "3. Nutrition Guide"}</span>
         </div>
 
         {profile && (
@@ -190,10 +190,10 @@ export default function NutritionPage() {
         {/* STEP 3: GENERATE MEAL PLAN */}
         {macrosSet && nutritionOnboarded && (
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Step 3: Generate Your Meal Plan</h3>
-            <p className="text-sm text-gray-400 mb-3">Claude will build a personalised 7-day meal plan with themed days, snack swaps, hydration targets, supplement recommendations, and a realistic timeline — all based on your profile.</p>
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Step 3: Generate Your Nutrition Guide</h3>
+            <p className="text-sm text-gray-400 mb-3">Claude will build a personalised nutrition guide with macro guidelines, dangerous snack swaps, hydration targets, supplement recommendations, and a realistic timeline — all based on your profile.</p>
             <button onClick={generateMealPlan} disabled={generatingPlan} className="w-full bg-green-600 hover:bg-green-500 disabled:bg-gray-700 text-white font-semibold py-3 rounded-xl transition-colors">
-              {generatingPlan ? "Generating..." : hasActivePlan ? "Regenerate Meal Plan" : "Generate My 7-Day Meal Plan →"}
+              {generatingPlan ? "Generating..." : hasActivePlan ? "Regenerate Nutrition Guide" : "Generate My Nutrition Guide →"}
             </button>
           </div>
         )}
@@ -203,7 +203,7 @@ export default function NutritionPage() {
           <div className="bg-gray-900 border border-gray-800 rounded-xl">
             <div className="flex items-center justify-between px-4 py-2 border-b border-gray-800">
               <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
-                {generatingPlan ? <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />Generating your meal plan...</span> : "Your Nutrition Plan"}
+                {generatingPlan ? <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />Generating your nutrition guide...</span> : "Your Nutrition Guide"}
               </p>
               {!generatingPlan && <button onClick={() => navigator.clipboard.writeText(streamedPlan)} className="text-xs text-gray-400 hover:text-white">Copy</button>}
             </div>
@@ -212,7 +212,7 @@ export default function NutritionPage() {
             </div>
             {planGenerated && (
               <div className="px-4 py-3 border-t border-gray-800">
-                <button onClick={() => router.push("/nutrition/plan")} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm">View Full Meal Plan →</button>
+                <button onClick={() => router.push("/nutrition/plan")} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm">View Full Nutrition Guide →</button>
               </div>
             )}
           </div>

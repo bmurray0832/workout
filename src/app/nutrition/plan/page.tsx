@@ -20,8 +20,8 @@ type NutritionPlan = {
 };
 
 const TABS = [
-  { key: "mealPlan", label: "Meal Plan" },
-  { key: "snackSwaps", label: "Snack Swaps" },
+  { key: "mealPlan", label: "Macros & Guidelines" },
+  { key: "snackSwaps", label: "Dangerous Snacks" },
   { key: "personalRules", label: "My Rules" },
   { key: "timeline", label: "Timeline" },
   { key: "hydration", label: "Hydration" },
@@ -52,11 +52,11 @@ export default function MealPlanPage() {
       <div className="min-h-screen bg-gray-950 text-white flex flex-col">
         <header className="border-b border-gray-800 px-4 py-3 flex items-center justify-between sticky top-0 bg-gray-950 z-10">
           <button onClick={() => router.push("/")} className="text-gray-400 hover:text-white text-sm">← Dashboard</button>
-          <span className="font-semibold text-sm">Meal Plan</span>
+          <span className="font-semibold text-sm">Nutrition Guide</span>
           <div className="w-16" />
         </header>
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-          <p className="text-gray-400 mb-4">No meal plan generated yet.</p>
+          <p className="text-gray-400 mb-4">No nutrition guide generated yet.</p>
           <button onClick={() => router.push("/nutrition")} className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2.5 rounded-lg transition-colors text-sm">Go to Nutrition →</button>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function MealPlanPage() {
     <div className="min-h-screen bg-gray-950 text-white flex flex-col">
       <header className="border-b border-gray-800 px-4 py-3 flex items-center justify-between sticky top-0 bg-gray-950 z-10">
         <button onClick={() => router.push("/")} className="text-gray-400 hover:text-white text-sm">← Dashboard</button>
-        <span className="font-semibold text-sm">Meal Plan</span>
+        <span className="font-semibold text-sm">Nutrition Guide</span>
         <button onClick={() => router.push("/nutrition")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg">Regenerate</button>
       </header>
 

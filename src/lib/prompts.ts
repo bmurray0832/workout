@@ -252,28 +252,20 @@ Show the full Mifflin-St Jeor calculation step by step:
 - Women: (10 x weight in kg) + (6.25 x height in cm) - (5 x age) - 161
 Apply the most appropriate activity multiplier based on BOTH my job AND training combined (1.2 sedentary to 1.9 extremely active). Show every number.
 Warn that online calculators are often inaccurate for active people. Recommend tracking real food intake for 2 weeks as the gold standard.
-Confirm alignment with my pre-set targets, or flag if they seem off.
-Set a deficit of ~500 kcal below TDEE for steady fat loss (~1lb/week). Never go below 500 kcal under TDEE for active individuals.
+Show three key numbers clearly: my estimated maintenance TDEE, my deficit target (TDEE minus ~500 kcal for ~1lb/week fat loss), and the minimum safe floor. Never go below 500 kcal under TDEE for active individuals.
 
 ## MACRO TARGETS
-Give daily protein, carb, and fat targets in grams. Explain why each is set at that level in plain English. Prioritise protein to preserve muscle during the cut. Also break these down per meal for my ${profile.mealsPerDay ?? 4} meals/day.
+Give daily protein, carb, and fat targets in grams. Explain why each is set at that level in plain English. Prioritise protein to preserve muscle during the cut. Break these down per meal for my ${profile.mealsPerDay ?? 4} meals/day.
+Include practical guidance: what does hitting these numbers actually look like? Give a quick "macro cheat sheet" — a short list of go-to high-protein foods, smart carb sources, and healthy fats that make hitting targets easy without tracking every gram.
 
-## 7-DAY MEAL PLAN
-Build a fun, exciting 7-day meal plan with breakfast, lunch, dinner, and one optional dessert per day.
-Rules:
-- Every day MUST hit my calorie and macro targets across all meals combined
-- Protein must hit daily target across the full day
-- No boring chicken and broccoli unless I specifically asked for it
-- Give every day a fun theme (e.g. "Monday: Mediterranean Monday", "Tuesday: Tex-Mex Tuesday")
-- Include calorie and macro counts (protein/carbs/fat) for EVERY meal
-- Flag meals that are great for batch cooking or meal prep with [MEAL PREP]
-- Include at least 2 meals per week that feel like a treat but are secretly low calorie — mark with [TREAT]
-- If I drink alcohol, factor those calories into relevant days
-- Use my favourite meals/cuisines as inspiration
-- Avoid any foods I said I hate
-
-## SNACK SWAPS
-Look at the snacks I currently eat. For each one, suggest a healthier alternative that scratches the same itch — sweet for sweet, crunchy for crunchy. Give at least 5 snack options with calorie and protein counts. Make them exciting.
+## DANGEROUS SNACKS & CALORIE TRAPS
+This is the section that saves the cut. Based on my snack habits and food preferences, identify:
+- My current snacks that are secretly destroying my deficit (show the actual calorie damage per serving)
+- Common "healthy" foods that are actually calorie bombs (granola, acai bowls, smoothies, trail mix, etc.)
+- Alcohol calorie reality check if I drink — show exactly how a night out can wipe a week's deficit
+- Restaurant/takeaway traps to watch for
+- Weekend pitfalls specific to my lifestyle
+For each dangerous snack or trap, suggest a smarter swap that scratches the same itch (sweet for sweet, crunchy for crunchy, salty for salty) with calorie and protein comparison. Make me actually want to eat the swaps.
 
 ## PERSONAL RULES
 Give me 5 personalised fat loss rules based on everything about ME — not generic advice. Make them specific to my job, stress, alcohol habits, cooking style, schedule, and lifestyle. These should feel like they were written for me and no one else.
@@ -296,5 +288,5 @@ Be clear: supplements are the 1%. Food, training, sleep, and consistency are the
 
 ---
 
-Throughout everything, keep the tone fun, warm, and motivating. Make me feel like I have a world-class nutritionist in my corner.`;
+Throughout everything, keep the tone fun, warm, and motivating. Make me feel like I have a world-class nutritionist in my corner. Focus on practical guidelines I can apply every day — not a rigid meal-by-meal prescription.`;
 }
