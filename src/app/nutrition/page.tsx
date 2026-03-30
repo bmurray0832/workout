@@ -24,16 +24,28 @@ export default function NutritionPage() {
   const [streamedRationale, setStreamedRationale] = useState("");
   const rationaleRef = useRef<HTMLDivElement>(null);
 
+  // Meal plan state
+  const [generatingPlan, setGeneratingPlan] = useState(false);
+  const [streamedPlan, setStreamedPlan] = useState("");
+  const [planGenerated, setPlanGenerated] = useState(false);
+  const [hasActivePlan, setHasActivePlan] = useState(false);
+  const planRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    fetch("/api/profile").then((r) => r.json()).then((p) => {
+    Promise.all([
+      fetch("/api/profile").then((r) => r.json()),
+      fetch("/api/nutrition/plan/active").then((r) => (r.ok ? r.json() : null)),
+    ]).then(([p, plan]) => {
       setProfile(p);
       if (p?.nutritionPhase) setPhase(p.nutritionPhase);
       if (p?.nutritionNotes) setNotes(p.nutritionNotes);
       if (p?.dailyCalorieTarget) setGoals({ nutritionPhase: p.nutritionPhase, dailyCalorieTarget: p.dailyCalorieTarget, proteinTargetG: p.proteinTargetG, carbTargetG: p.carbTargetG, fatTargetG: p.fatTargetG, mealsPerDay: p.mealsPerDay ?? 4, nutritionNotes: p.nutritionNotes ?? "" });
+      if (plan) setHasActivePlan(true);
     });
   }, []);
 
   useEffect(() => { if (rationaleRef.current) rationaleRef.current.scrollTop = rationaleRef.current.scrollHeight; }, [streamedRationale]);
+  useEffect(() => { if (planRef.current) planRef.current.scrollTop = planRef.current.scrollHeight; }, [streamedPlan]);
 
   const calculateTargets = async () => {
     setCalculating(true); setStreamedRationale(""); setGoals(null);
@@ -54,25 +66,56 @@ export default function NutritionPage() {
     setSaving(true);
     try {
       await fetch("/api/profile", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nutritionPhase: goals.nutritionPhase, dailyCalorieTarget: goals.dailyCalorieTarget, proteinTargetG: goals.proteinTargetG, carbTargetG: goals.carbTargetG, fatTargetG: goals.fatTargetG, mealsPerDay: goals.mealsPerDay, nutritionNotes: goals.nutritionNotes, nutritionCalculated: true }) });
-      setSaved(true); setTimeout(() => router.push("/"), 1200);
+      setSaved(true);
+      setProfile((p) => p ? { ...p, nutritionCalculated: true, nutritionPhase: goals.nutritionPhase, dailyCalorieTarget: goals.dailyCalorieTarget, proteinTargetG: goals.proteinTargetG, carbTargetG: goals.carbTargetG, fatTargetG: goals.fatTargetG } : p);
     } catch (err) { console.error(err); } finally { setSaving(false); }
   };
+
+  const generateMealPlan = async () => {
+    setGeneratingPlan(true); setStreamedPlan(""); setPlanGenerated(false);
+    try {
+      const res = await fetch("/api/nutrition/plan", { method: "POST", headers: { "Content-Type": "application/json" } });
+      if (!res.body) throw new Error("No stream");
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let full = "";
+      while (true) { const { done, value } = await reader.read(); if (done) break; full += decoder.decode(value); setStreamedPlan(full); }
+      setPlanGenerated(true);
+      setHasActivePlan(true);
+    } catch (err) { console.error(err); } finally { setGeneratingPlan(false); }
+  };
+
+  const nutritionOnboarded = Boolean(profile?.nutritionOnboarded);
+  const macrosSet = Boolean(profile?.nutritionCalculated);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col">
       <header className="border-b border-gray-800 px-4 py-3 flex items-center justify-between sticky top-0 bg-gray-950 z-10">
         <button onClick={() => router.push("/")} className="text-gray-400 hover:text-white text-sm">← Dashboard</button>
-        <span className="font-semibold text-sm">Nutrition Goals</span>
-        <div className="w-16" />
+        <span className="font-semibold text-sm">Nutrition</span>
+        <div className="flex gap-2">
+          {hasActivePlan && <button onClick={() => router.push("/nutrition/plan")} className="text-xs text-blue-400 hover:text-blue-300 border border-blue-800 px-3 py-1.5 rounded-lg">View Nutrition Guide</button>}
+        </div>
       </header>
       <div className="px-4 py-6 max-w-lg mx-auto w-full space-y-5">
+        {/* Step indicator */}
+        <div className="flex items-center gap-3 text-xs text-gray-500">
+          <span className={`px-3 py-1 rounded-full border ${macrosSet ? "border-green-700 text-green-400 bg-green-950" : "border-blue-600 text-blue-400 bg-blue-950"}`}>{macrosSet ? "1. Macros Set" : "1. Set Macros"}</span>
+          <span className="text-gray-700">→</span>
+          <span className={`px-3 py-1 rounded-full border ${nutritionOnboarded ? "border-green-700 text-green-400 bg-green-950" : "border-gray-700 text-gray-500"}`}>{nutritionOnboarded ? "2. Preferences Set" : "2. Food Preferences"}</span>
+          <span className="text-gray-700">→</span>
+          <span className={`px-3 py-1 rounded-full border ${hasActivePlan ? "border-green-700 text-green-400 bg-green-950" : "border-gray-700 text-gray-500"}`}>{hasActivePlan ? "3. Guide Ready" : "3. Nutrition Guide"}</span>
+        </div>
+
         {profile && (
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 text-sm text-gray-400">
             Claude will calculate your targets using: <span className="text-white">{String(profile.weightLbs)}lbs · {String(profile.heightStr)} · {String(profile.age)}yo · {String(profile.trainingDaysPerWeek)} training days/week</span>
           </div>
         )}
+
+        {/* STEP 1: MACRO CALCULATION */}
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Current Phase</h3>
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Step 1: Current Phase</h3>
           <div className="grid grid-cols-2 gap-2">
             {PHASES.map((p) => (
               <button key={p.id} onClick={() => { setPhase(p.id); setSaved(false); setGoals(null); }} className={`p-3 rounded-lg border text-left transition-colors ${phase === p.id ? "border-blue-500 bg-blue-950" : "border-gray-700 bg-gray-800 hover:border-gray-500"}`}>
@@ -122,7 +165,56 @@ export default function NutritionPage() {
               </div>
             </div>
             <div className="mt-2 p-3 bg-gray-800 rounded-lg text-xs text-gray-400">Per meal (~{goals.mealsPerDay} meals): {Math.round(goals.dailyCalorieTarget / goals.mealsPerDay)} kcal · {Math.round(goals.proteinTargetG / goals.mealsPerDay)}g protein · {Math.round(goals.carbTargetG / goals.mealsPerDay)}g carbs · {Math.round(goals.fatTargetG / goals.mealsPerDay)}g fat</div>
-            <button onClick={saveGoals} disabled={saving} className={`mt-4 w-full font-semibold py-3 rounded-xl transition-colors ${saved ? "bg-green-700 text-white" : "bg-blue-600 hover:bg-blue-500 text-white"} disabled:bg-gray-700`}>{saving ? "Saving..." : saved ? "✓ Saved — Redirecting..." : "Save These Targets →"}</button>
+            <button onClick={saveGoals} disabled={saving} className={`mt-4 w-full font-semibold py-3 rounded-xl transition-colors ${saved ? "bg-green-700 text-white" : "bg-blue-600 hover:bg-blue-500 text-white"} disabled:bg-gray-700`}>{saving ? "Saving..." : saved ? "Saved" : "Save These Targets →"}</button>
+          </div>
+        )}
+
+        {/* STEP 2: FOOD PREFERENCES */}
+        {macrosSet && (
+          <div className={`bg-gray-900 border rounded-xl p-4 ${nutritionOnboarded ? "border-green-800" : "border-orange-800"}`}>
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Step 2: Food & Lifestyle Preferences</h3>
+            {nutritionOnboarded ? (
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-green-400">Food preferences saved</p>
+                <button onClick={() => router.push("/nutrition/onboarding")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg">Edit</button>
+              </div>
+            ) : (
+              <div>
+                <p className="text-sm text-gray-400 mb-3">Tell Claude about your favourite foods, snack habits, and lifestyle so your meal plan is built around what you actually enjoy.</p>
+                <button onClick={() => router.push("/nutrition/onboarding")} className="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3 rounded-xl transition-colors">Complete Food Preferences →</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* STEP 3: GENERATE MEAL PLAN */}
+        {macrosSet && nutritionOnboarded && (
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Step 3: Generate Your Nutrition Guide</h3>
+            <p className="text-sm text-gray-400 mb-3">Claude will build a personalised nutrition guide with macro guidelines, dangerous snack swaps, hydration targets, supplement recommendations, and a realistic timeline — all based on your profile.</p>
+            <button onClick={generateMealPlan} disabled={generatingPlan} className="w-full bg-green-600 hover:bg-green-500 disabled:bg-gray-700 text-white font-semibold py-3 rounded-xl transition-colors">
+              {generatingPlan ? "Generating..." : hasActivePlan ? "Regenerate Nutrition Guide" : "Generate My Nutrition Guide →"}
+            </button>
+          </div>
+        )}
+
+        {/* STREAMED MEAL PLAN */}
+        {streamedPlan && (
+          <div className="bg-gray-900 border border-gray-800 rounded-xl">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-800">
+              <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                {generatingPlan ? <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />Generating your nutrition guide...</span> : "Your Nutrition Guide"}
+              </p>
+              {!generatingPlan && <button onClick={() => navigator.clipboard.writeText(streamedPlan)} className="text-xs text-gray-400 hover:text-white">Copy</button>}
+            </div>
+            <div ref={planRef} className="p-4 max-h-[500px] overflow-y-auto text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
+              {streamedPlan}{generatingPlan && <span className="animate-pulse">▌</span>}
+            </div>
+            {planGenerated && (
+              <div className="px-4 py-3 border-t border-gray-800">
+                <button onClick={() => router.push("/nutrition/plan")} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm">View Full Nutrition Guide →</button>
+              </div>
+            )}
           </div>
         )}
         <div className="h-6" />
