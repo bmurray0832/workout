@@ -89,3 +89,10 @@ export async function getActiveProgram() {
     orderBy: { createdAt: "desc" },
   });
 }
+
+export async function getActiveNutritionPlan() {
+  return db.nutritionPlan.findFirst({
+    where: { isActive: true },
+    orderBy: { createdAt: "desc" },
+  });
+}

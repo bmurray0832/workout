@@ -1,12 +1,20 @@
-import type { UserProfile, WeeklyCheckIn, PlateauLog } from "@prisma/client";
+import type { UserProfile, WeeklyCheckIn, PlateauLog, Program } from "@prisma/client";
 import { buildEquipmentContext } from "@/lib/equipment";
 
 function getNutritionBlock(profile: UserProfile): string {
   if (!profile.dailyCalorieTarget) return "";
-  return `
+  let block = `
 NUTRITION TARGETS: ${profile.dailyCalorieTarget} kcal/day · ${profile.proteinTargetG}g protein · ${profile.carbTargetG}g carbs · ${profile.fatTargetG}g fat · ${profile.mealsPerDay ?? 4} meals/day (${profile.nutritionPhase ?? "maintenance"} phase).${profile.nutritionNotes ? ` Dietary notes: ${profile.nutritionNotes}.` : ""}
 Factor these targets into all recommendations.
 `;
+  if (profile.nutritionOnboarded) {
+    if (profile.dietaryRestrictions) block += `Dietary restrictions: ${profile.dietaryRestrictions}.\n`;
+    if (profile.favoriteMeals) {
+      try { const meals = JSON.parse(profile.favoriteMeals); if (meals.length) block += `Favourite meals: ${meals.join(", ")}.\n`; } catch {}
+    }
+    if (profile.jobType) block += `Job type: ${profile.jobType}.\n`;
+  }
+  return block;
 }
 
 function getEquipmentBlock(profile: UserProfile): string {
@@ -154,4 +162,139 @@ Training ${profile.trainingDaysPerWeek} days/week.
 Current lifts: Bench ~${profile.benchMaxLbs ?? "unknown"}lbs, Deadlift ~${profile.deadliftMaxLbs ?? "unknown"}lbs, Leg press ~${profile.legPressMaxLbs ?? "unknown"}lbs, OHP ~${profile.ohpMaxLbs ?? "unknown"}lbs.
 
 Build a complete 16-week recomposition blueprint with training program, nutrition strategy, cardio plan, tracking protocol, and adjustment checkpoints at weeks 4, 8, and 12.`;
+}
+
+function getFoodPreferencesBlock(profile: UserProfile): string {
+  const parts: string[] = [];
+  if (profile.favoriteMeals) {
+    try { const meals = JSON.parse(profile.favoriteMeals); if (meals.length) parts.push(`My top favourite meals/dishes: ${meals.join(", ")}`); } catch {}
+  }
+  if (profile.hatedFoods) {
+    try { const foods = JSON.parse(profile.hatedFoods); if (foods.length) parts.push(`Foods I absolutely hate and will never eat: ${foods.join(", ")}`); } catch {}
+  }
+  if (profile.dietaryRestrictions) parts.push(`Dietary restrictions/allergies: ${profile.dietaryRestrictions}`);
+  if (profile.cookingStyle) {
+    const styles: Record<string, string> = { scratch: "cooking from scratch", quick: "quick meals (under 15 mins)", batch: "batch cooking / meal prep" };
+    parts.push(`Cooking preference: ${styles[profile.cookingStyle] ?? profile.cookingStyle}`);
+  }
+  if (profile.foodAdventurousness) parts.push(`Food adventurousness: ${profile.foodAdventurousness}/10`);
+  return parts.length ? parts.join("\n") : "No specific food preferences provided.";
+}
+
+function getSnackBlock(profile: UserProfile): string {
+  const parts: string[] = [];
+  if (profile.currentSnacks) {
+    try { const snacks = JSON.parse(profile.currentSnacks); if (snacks.length) parts.push(`Current snacks I reach for: ${snacks.join(", ")}`); } catch {}
+  }
+  if (profile.snackReason) parts.push(`I tend to snack out of: ${profile.snackReason}`);
+  if (profile.snackPreference) parts.push(`I prefer: ${profile.snackPreference} snacks`);
+  if (profile.lateNightSnacking !== null && profile.lateNightSnacking !== undefined) parts.push(`Late night snacking: ${profile.lateNightSnacking ? "yes" : "no"}`);
+  return parts.length ? parts.join("\n") : "No snack habits provided.";
+}
+
+function getLifestyleBlock(profile: UserProfile): string {
+  const parts: string[] = [];
+  if (profile.jobType) {
+    const jobs: Record<string, string> = { sedentary: "desk job / sedentary", light: "lightly active job", active: "active job (on my feet)", very_active: "very active / physical job", manual: "heavy manual labour" };
+    parts.push(`Job type: ${jobs[profile.jobType] ?? profile.jobType}`);
+  }
+  parts.push(`Training: ${profile.trainingDaysPerWeek} days/week, ${profile.sessionLengthMin} min sessions`);
+  if (profile.typicalSleepHours) parts.push(`Typical sleep: ${profile.typicalSleepHours} hours/night`);
+  if (profile.baselineStressLevel) parts.push(`Stress level: ${profile.baselineStressLevel}`);
+  if (profile.alcoholDrinksPerWeek !== null && profile.alcoholDrinksPerWeek !== undefined) {
+    parts.push(profile.alcoholDrinksPerWeek === 0 ? "Alcohol: none" : `Alcohol: ~${profile.alcoholDrinksPerWeek} drinks per week`);
+  }
+  if (profile.dailyStepTarget) parts.push(`Daily step target: ${profile.dailyStepTarget}`);
+  return parts.join("\n");
+}
+
+export function buildMealPlanPrompt(profile: UserProfile, activeProgram?: Pick<Program, "name" | "content"> | null): string {
+  const weightKg = (profile.weightLbs / 2.205).toFixed(1);
+
+  return `Act as an expert nutritionist with 30 years of experience helping clients lose body fat sustainably without miserable dieting. You've worked with everyone from busy parents to athletes getting shredded for competition. You know that lasting fat loss isn't bland food and brutal restriction — it's finding an approach that fits the person. Your tone is encouraging, knowledgeable, and straight-talking — like a brilliant friend who happens to have a nutrition degree.
+
+## MY STATS
+- Age: ${profile.age}
+- Sex: ${profile.sex}
+- Height: ${profile.heightStr}
+- Current weight: ${profile.weightLbs}lbs (${weightKg}kg)
+- Current phase: ${profile.nutritionPhase ?? "cut"}
+
+## MY LIFESTYLE
+${getLifestyleBlock(profile)}
+
+## MY FOOD PREFERENCES
+${getFoodPreferencesBlock(profile)}
+
+## MY SNACK HABITS
+${getSnackBlock(profile)}
+
+## MY INJURY CONTEXT
+${profile.injuryNotes ?? "No current injuries."}${profile.restrictedMovements ? ` Restricted movements: ${profile.restrictedMovements}.` : ""}
+
+## MY CURRENT NUTRITION TARGETS (already calculated)
+- Daily calories: ${profile.dailyCalorieTarget ?? "not set"} kcal
+- Protein: ${profile.proteinTargetG ?? "not set"}g
+- Carbs: ${profile.carbTargetG ?? "not set"}g
+- Fat: ${profile.fatTargetG ?? "not set"}g
+- Meals per day: ${profile.mealsPerDay ?? 4}
+${profile.nutritionNotes ? `- Notes: ${profile.nutritionNotes}` : ""}
+
+${activeProgram ? `## MY ACTIVE TRAINING PROGRAMME\n${activeProgram.name}\n${activeProgram.content.slice(0, 800)}\n...\n` : "## TRAINING\nNo active programme yet. Design nutrition for someone training ${profile.trainingDaysPerWeek} days/week."}
+
+---
+
+Now build my complete nutrition plan. Use the following section headers EXACTLY as shown so the app can parse them:
+
+## CALORIE CALCULATION
+Show the full Mifflin-St Jeor calculation step by step:
+- Men: (10 x weight in kg) + (6.25 x height in cm) - (5 x age) + 5
+- Women: (10 x weight in kg) + (6.25 x height in cm) - (5 x age) - 161
+Apply the most appropriate activity multiplier based on BOTH my job AND training combined (1.2 sedentary to 1.9 extremely active). Show every number.
+Warn that online calculators are often inaccurate for active people. Recommend tracking real food intake for 2 weeks as the gold standard.
+Confirm alignment with my pre-set targets, or flag if they seem off.
+Set a deficit of ~500 kcal below TDEE for steady fat loss (~1lb/week). Never go below 500 kcal under TDEE for active individuals.
+
+## MACRO TARGETS
+Give daily protein, carb, and fat targets in grams. Explain why each is set at that level in plain English. Prioritise protein to preserve muscle during the cut. Also break these down per meal for my ${profile.mealsPerDay ?? 4} meals/day.
+
+## 7-DAY MEAL PLAN
+Build a fun, exciting 7-day meal plan with breakfast, lunch, dinner, and one optional dessert per day.
+Rules:
+- Every day MUST hit my calorie and macro targets across all meals combined
+- Protein must hit daily target across the full day
+- No boring chicken and broccoli unless I specifically asked for it
+- Give every day a fun theme (e.g. "Monday: Mediterranean Monday", "Tuesday: Tex-Mex Tuesday")
+- Include calorie and macro counts (protein/carbs/fat) for EVERY meal
+- Flag meals that are great for batch cooking or meal prep with [MEAL PREP]
+- Include at least 2 meals per week that feel like a treat but are secretly low calorie — mark with [TREAT]
+- If I drink alcohol, factor those calories into relevant days
+- Use my favourite meals/cuisines as inspiration
+- Avoid any foods I said I hate
+
+## SNACK SWAPS
+Look at the snacks I currently eat. For each one, suggest a healthier alternative that scratches the same itch — sweet for sweet, crunchy for crunchy. Give at least 5 snack options with calorie and protein counts. Make them exciting.
+
+## PERSONAL RULES
+Give me 5 personalised fat loss rules based on everything about ME — not generic advice. Make them specific to my job, stress, alcohol habits, cooking style, schedule, and lifestyle. These should feel like they were written for me and no one else.
+
+## TIMELINE
+Tell me honestly and encouragingly what I can expect following this plan. Give a month-by-month projection over 12 weeks. Be real — no false promises — but keep me motivated.
+
+## HYDRATION
+Calculate my daily water intake target:
+- Base: 35ml per kg of bodyweight
+- Add 500ml for every hour of exercise
+- Add 500-1000ml for physical/outdoor jobs
+Give 3-4 practical tips specific to my lifestyle to hit my target.
+Explain how hydration affects hunger, metabolism, gym performance, and energy.
+
+## SUPPLEMENTS
+Recommend ONLY evidence-backed supplements relevant to me. Consider: whey protein, creatine monohydrate (3-5g daily), caffeine (strategic use, cut off by midday for cortisol management), vitamin D, omega-3 fish oil, magnesium glycinate (for sleep and stress/cortisol reduction).
+For each: dose, best time to take it, why it's relevant to ME specifically, and a budget-friendly suggestion.
+Be clear: supplements are the 1%. Food, training, sleep, and consistency are the 99%.
+
+---
+
+Throughout everything, keep the tone fun, warm, and motivating. Make me feel like I have a world-class nutritionist in my corner.`;
 }

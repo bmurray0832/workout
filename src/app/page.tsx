@@ -49,6 +49,7 @@ export default function Dashboard() {
   const [streamedContent, setStreamedContent] = useState("");
   const [checkIn, setCheckIn] = useState<CheckInSummary | null>(null);
   const [plateauCount, setPlateauCount] = useState(0);
+  const [hasMealPlan, setHasMealPlan] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,10 +58,12 @@ export default function Dashboard() {
       fetch("/api/program/active").then((r) => (r.ok ? r.json() : null)),
       fetch("/api/checkin?limit=1").then((r) => (r.ok ? r.json() : [])),
       fetch("/api/plateaus").then((r) => (r.ok ? r.json() : [])),
-    ]).then(([p, prog, checkIns, plateaus]) => {
+      fetch("/api/nutrition/plan/active").then((r) => (r.ok ? r.json() : null)),
+    ]).then(([p, prog, checkIns, plateaus, mealPlan]) => {
       setProfile(p);
       setProgram(prog);
       setPlateauCount(plateaus?.length ?? 0);
+      setHasMealPlan(!!mealPlan);
       if (checkIns?.length > 0) {
         const last = checkIns[0];
         const daysAgo = Math.floor((Date.now() - new Date(last.date).getTime()) / (1000 * 60 * 60 * 24));
@@ -127,6 +130,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-2">
           <button onClick={() => router.push("/history")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">History</button>
           <button onClick={() => router.push("/nutrition")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">🥗 Nutrition</button>
+          {hasMealPlan && <button onClick={() => router.push("/nutrition/plan")} className="text-xs text-green-400 hover:text-green-300 border border-green-800 px-3 py-1.5 rounded-lg transition-colors">Meal Plan</button>}
           <button onClick={() => router.push("/equipment")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">⛹️ Equipment</button>
           <button
             onClick={() => router.push("/checkin")}

@@ -36,6 +36,28 @@ model UserProfile {
   mealsPerDay         Int?
   nutritionNotes      String?
   nutritionCalculated Boolean  @default(false)
+
+  // Food preferences
+  favoriteMeals       String?   // JSON array
+  hatedFoods          String?   // JSON array
+  dietaryRestrictions String?
+  cookingStyle        String?   // "scratch" | "quick" | "batch"
+  foodAdventurousness Int?      // 1-10
+
+  // Snack habits
+  currentSnacks       String?   // JSON array
+  snackReason         String?   // "hunger" | "boredom" | "habit"
+  snackPreference     String?   // "sweet" | "savory" | "both"
+  lateNightSnacking   Boolean?
+
+  // Lifestyle baseline
+  jobType             String?   // "sedentary" | "light" | "active" | "very_active" | "manual"
+  typicalSleepHours   Float?
+  baselineStressLevel String?   // "low" | "moderate" | "high"
+  alcoholDrinksPerWeek Int?
+  dailyStepTarget     Int?      // 8000-10000
+
+  nutritionOnboarded  Boolean  @default(false)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
@@ -119,4 +141,22 @@ model AIResponse {
   content     String
   model       String   @default("claude-sonnet-4-6")
   createdAt   DateTime @default(now())
+}
+
+model NutritionPlan {
+  id            Int      @id @default(autoincrement())
+  programId     Int?
+  phase         String
+  dailyCalories Int
+  proteinG      Int
+  carbsG        Int
+  fatG          Int
+  mealPlan      String
+  snackSwaps    String?
+  personalRules String?
+  timeline      String?
+  hydration     String?
+  supplements   String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
 }
