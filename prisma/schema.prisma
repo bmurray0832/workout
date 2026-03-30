@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -25,37 +25,37 @@ model UserProfile {
   equipment           String
   primaryGoal         String
   secondaryGoal       String?
-  injuryNotes         String?
-  restrictedMovements String?
-  availableEquipment  String   @default("[]")
+  injuryNotes         String?  @db.Text
+  restrictedMovements String?  @db.Text
+  availableEquipment  String   @default("[]") @db.Text
   nutritionPhase      String?
   dailyCalorieTarget  Int?
   proteinTargetG      Int?
   carbTargetG         Int?
   fatTargetG          Int?
   mealsPerDay         Int?
-  nutritionNotes      String?
+  nutritionNotes      String?  @db.Text
   nutritionCalculated Boolean  @default(false)
 
   // Food preferences
-  favoriteMeals       String?   // JSON array
-  hatedFoods          String?   // JSON array
-  dietaryRestrictions String?
-  cookingStyle        String?   // "scratch" | "quick" | "batch"
-  foodAdventurousness Int?      // 1-10
+  favoriteMeals       String?  @db.Text
+  hatedFoods          String?  @db.Text
+  dietaryRestrictions String?  @db.Text
+  cookingStyle        String?
+  foodAdventurousness Int?
 
   // Snack habits
-  currentSnacks       String?   // JSON array
-  snackReason         String?   // "hunger" | "boredom" | "habit"
-  snackPreference     String?   // "sweet" | "savory" | "both"
+  currentSnacks       String?  @db.Text
+  snackReason         String?
+  snackPreference     String?
   lateNightSnacking   Boolean?
 
   // Lifestyle baseline
-  jobType             String?   // "sedentary" | "light" | "active" | "very_active" | "manual"
-  typicalSleepHours   Float?
-  baselineStressLevel String?   // "low" | "moderate" | "high"
+  jobType              String?
+  typicalSleepHours    Float?
+  baselineStressLevel  String?
   alcoholDrinksPerWeek Int?
-  dailyStepTarget     Int?      // 8000-10000
+  dailyStepTarget      Int?
 
   nutritionOnboarded  Boolean  @default(false)
   createdAt           DateTime @default(now())
@@ -67,7 +67,7 @@ model Program {
   name        String
   weeks       Int              @default(12)
   promptType  String           @default("program")
-  content     String
+  content     String           @db.Text
   isActive    Boolean          @default(true)
   startDate   DateTime?
   createdAt   DateTime         @default(now())
@@ -84,7 +84,7 @@ model WorkoutSession {
   date        DateTime      @default(now())
   completed   Boolean       @default(false)
   durationMin Int?
-  notes       String?
+  notes       String?       @db.Text
   exercises   ExerciseLog[]
 }
 
@@ -99,7 +99,7 @@ model ExerciseLog {
   weightLbs     Float
   rpe           Float?
   tempo         String?
-  notes         String?
+  notes         String?        @db.Text
   createdAt     DateTime       @default(now())
 }
 
@@ -116,29 +116,29 @@ model WeeklyCheckIn {
   recoveryScore   Int
   avgCalories     Int?
   avgProteinG     Int?
-  nutritionNotes  String?
-  wins            String?
-  struggles       String?
-  notes           String?
+  nutritionNotes  String?  @db.Text
+  wins            String?  @db.Text
+  struggles       String?  @db.Text
+  notes           String?  @db.Text
 }
 
 model PlateauLog {
-  id            Int      @id @default(autoincrement())
-  detectedAt    DateTime @default(now())
+  id            Int       @id @default(autoincrement())
+  detectedAt    DateTime  @default(now())
   exerciseName  String
   stalledWeeks  Int
   lastWeight    Float
-  aiAnalysis    String?
-  resolved      Boolean  @default(false)
+  aiAnalysis    String?   @db.Text
+  resolved      Boolean   @default(false)
   resolvedAt    DateTime?
-  resolvedNotes String?
+  resolvedNotes String?   @db.Text
 }
 
 model AIResponse {
   id          Int      @id @default(autoincrement())
   promptType  String
-  inputData   String?
-  content     String
+  inputData   String?  @db.Text
+  content     String   @db.Text
   model       String   @default("claude-sonnet-4-6")
   createdAt   DateTime @default(now())
 }
@@ -151,12 +151,12 @@ model NutritionPlan {
   proteinG      Int
   carbsG        Int
   fatG          Int
-  mealPlan      String
-  snackSwaps    String?
-  personalRules String?
-  timeline      String?
-  hydration     String?
-  supplements   String?
+  mealPlan      String   @db.Text
+  snackSwaps    String?  @db.Text
+  personalRules String?  @db.Text
+  timeline      String?  @db.Text
+  hydration     String?  @db.Text
+  supplements   String?  @db.Text
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
 }
