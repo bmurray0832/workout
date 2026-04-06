@@ -5,9 +5,16 @@ import { buildProgramPrompt, buildPlateauPrompt, buildWeakPointPrompt, buildReco
 
 export type PromptType = "program" | "plateau" | "weakpoint" | "recovery" | "injury" | "tracker" | "recomp";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
 export async function POST(req: NextRequest) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json(
+      { error: "ANTHROPIC_API_KEY is not configured. Add it to your Railway environment variables." },
+      { status: 500 }
+    );
+  }
+
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
   const { type, options = {} } = (await req.json()) as { type: PromptType; options?: Record<string, unknown> };
   const profile = await getUserProfile();
   if (!profile) return NextResponse.json({ error: "No profile found. Complete onboarding first." }, { status: 400 });
@@ -78,9 +85,14 @@ export async function POST(req: NextRequest) {
           await db.program.create({ data: { name: type === "program" ? "12-Week Hypertrophy Program" : "16-Week Recomp Strategy", weeks: type === "program" ? 12 : 16, promptType: type, content: fullContent, isActive: true, startDate: new Date() } });
         }
         controller.close();
-      } catch (err) { console.error("Stream error:", err); controller.error(err); }
+      } catch (err) {
+        console.error("Stream error:", err);
+        const msg = err instanceof Error ? err.message : String(err);
+        controller.enqueue(encoder.encode(`\n\n[Error: ${msg}]`));
+        controller.close();
+      }
     },
   });
 
-  return new NextResponse(stream, { headers: { "Content-Type": "text/plain; charset=utf-8", "Transfer-Encoding": "chunked", "X-Prompt-Type": type } });
+  return new NextResponse(stream, { headers: { "Content-Type": "text/plain; charset=utf-8", "X-Prompt-Type": type } });
 }
