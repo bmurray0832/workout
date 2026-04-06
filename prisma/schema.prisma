@@ -112,6 +112,20 @@ model PlateauLog {
   resolvedNotes String?
 }
 
+model DailyLog {
+  id          Int      @id @default(autoincrement())
+  date        String   @unique
+  weightLbs   Float?
+  sleepHours  Float?
+  waterOz     Int?
+  mood        Int?
+  energy      Int?
+  steps       Int?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model AIResponse {
   id          Int      @id @default(autoincrement())
   promptType  String

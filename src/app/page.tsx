@@ -125,6 +125,7 @@ export default function Dashboard() {
           )}
         </div>
         <div className="flex items-center gap-2">
+          <button onClick={() => router.push("/daily")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">Daily Log</button>
           <button onClick={() => router.push("/history")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">History</button>
           <button onClick={() => router.push("/nutrition")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">🥗 Nutrition</button>
           <button onClick={() => router.push("/equipment")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">⛹️ Equipment</button>
