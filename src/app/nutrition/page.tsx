@@ -21,6 +21,7 @@ export default function NutritionPage() {
   const [calculating, setCalculating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [goalsFromProfile, setGoalsFromProfile] = useState(false);
   const [streamedRationale, setStreamedRationale] = useState("");
   const rationaleRef = useRef<HTMLDivElement>(null);
 
@@ -29,14 +30,14 @@ export default function NutritionPage() {
       setProfile(p);
       if (p?.nutritionPhase) setPhase(p.nutritionPhase);
       if (p?.nutritionNotes) setNotes(p.nutritionNotes);
-      if (p?.dailyCalorieTarget) setGoals({ nutritionPhase: p.nutritionPhase, dailyCalorieTarget: p.dailyCalorieTarget, proteinTargetG: p.proteinTargetG, carbTargetG: p.carbTargetG, fatTargetG: p.fatTargetG, mealsPerDay: p.mealsPerDay ?? 4, nutritionNotes: p.nutritionNotes ?? "" });
+      if (p?.dailyCalorieTarget) { setGoals({ nutritionPhase: p.nutritionPhase, dailyCalorieTarget: p.dailyCalorieTarget, proteinTargetG: p.proteinTargetG, carbTargetG: p.carbTargetG, fatTargetG: p.fatTargetG, mealsPerDay: p.mealsPerDay ?? 4, nutritionNotes: p.nutritionNotes ?? "" }); setGoalsFromProfile(true); }
     });
   }, []);
 
   useEffect(() => { if (rationaleRef.current) rationaleRef.current.scrollTop = rationaleRef.current.scrollHeight; }, [streamedRationale]);
 
   const calculateTargets = async () => {
-    setCalculating(true); setStreamedRationale(""); setGoals(null);
+    setCalculating(true); setStreamedRationale(""); setGoals(null); setGoalsFromProfile(false);
     try {
       const res = await fetch("/api/nutrition/calculate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phase, notes }) });
       if (!res.body) throw new Error("No stream");
@@ -75,7 +76,7 @@ export default function NutritionPage() {
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Current Phase</h3>
           <div className="grid grid-cols-2 gap-2">
             {PHASES.map((p) => (
-              <button key={p.id} onClick={() => { setPhase(p.id); setSaved(false); setGoals(null); }} className={`p-3 rounded-lg border text-left transition-colors ${phase === p.id ? "border-blue-500 bg-blue-950" : "border-gray-700 bg-gray-800 hover:border-gray-500"}`}>
+              <button key={p.id} onClick={() => { setPhase(p.id); setSaved(false); setGoals(null); setGoalsFromProfile(false); }} className={`p-3 rounded-lg border text-left transition-colors ${phase === p.id ? "border-blue-500 bg-blue-950" : "border-gray-700 bg-gray-800 hover:border-gray-500"}`}>
                 <p className="text-sm font-medium">{p.label}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{p.desc}</p>
               </button>
@@ -95,7 +96,10 @@ export default function NutritionPage() {
         )}
         {goals && !calculating && (
           <div className="bg-gray-900 border border-blue-800 rounded-xl p-4">
-            <h3 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-4">Your Calculated Targets</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xs font-semibold text-blue-400 uppercase tracking-wider">{goalsFromProfile ? "Active Saved Targets" : "Calculated Targets"}</h3>
+              {goalsFromProfile && <span className="text-xs bg-green-900 border border-green-700 text-green-400 px-2 py-0.5 rounded-full">✓ saved</span>}
+            </div>
             <div className="grid grid-cols-4 gap-3 mb-4">
               <MacroCard label="Calories" value={String(goals.dailyCalorieTarget)} unit="kcal" color="blue" />
               <MacroCard label="Protein" value={String(goals.proteinTargetG)} unit="g" color="red" />

@@ -154,8 +154,8 @@ export default function Dashboard() {
           <p className="text-xs text-gray-500">No check-ins yet — <button onClick={() => router.push("/checkin")} className="text-blue-400 hover:underline">log your first one</button></p>
         )}
         {plateauCount > 0 && (
-          <button onClick={() => handleGenerate("plateau")} className="ml-auto shrink-0 text-xs bg-orange-900 border border-orange-700 text-orange-300 px-3 py-1.5 rounded-lg hover:bg-orange-800 transition-colors">
-            ⚠️ {plateauCount} plateau{plateauCount > 1 ? "s" : ""} detected — fix it
+          <button onClick={() => router.push("/plateaus")} className="ml-auto shrink-0 text-xs bg-orange-900 border border-orange-700 text-orange-300 px-3 py-1.5 rounded-lg hover:bg-orange-800 transition-colors">
+            ⚠️ {plateauCount} plateau{plateauCount > 1 ? "s" : ""} detected — view
           </button>
         )}
       </div>
@@ -219,7 +219,12 @@ export default function Dashboard() {
               <div className="px-5 py-4 border-b border-gray-800">
                 <h3 className="font-semibold">{program.name}</h3>
                 <p className="text-xs text-gray-400 mt-1">
-                  {program.weeks} weeks · {program.startDate ? `Started ${new Date(program.startDate).toLocaleDateString()}` : "Not started"}
+                  {program.weeks} weeks · {program.startDate
+                    ? (() => {
+                        const week = Math.min(Math.ceil((Date.now() - new Date(program.startDate).getTime()) / (7 * 24 * 60 * 60 * 1000)), program.weeks);
+                        return `Week ${week} of ${program.weeks} · Started ${new Date(program.startDate).toLocaleDateString()}`;
+                      })()
+                    : "Not started"}
                 </p>
               </div>
               <div className="p-5 max-h-[600px] overflow-y-auto text-sm text-gray-200 whitespace-pre-wrap leading-relaxed">{program.content}</div>

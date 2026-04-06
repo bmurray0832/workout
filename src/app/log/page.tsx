@@ -27,6 +27,17 @@ export default function LogPage() {
   const [starting, setStarting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [restrictedMovements, setRestrictedMovements] = useState<string[]>([]);
+  const [restrictedWarning, setRestrictedWarning] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/profile").then((r) => r.ok ? r.json() : null).then((p) => {
+      if (p?.restrictedMovements) {
+        setRestrictedMovements(p.restrictedMovements.split(",").map((s: string) => s.trim().toLowerCase()).filter(Boolean));
+      }
+    });
+  }, []);
 
   const startSession = async () => {
     setStarting(true);
@@ -44,6 +55,21 @@ export default function LogPage() {
     setExercises((prev) => [...prev, { exerciseName: name, muscleGroup, sets: [{ reps: 8, weightLbs: 0 }], notes: "", saved: false }]);
     setShowPresets(false);
     setCustomExercise("");
+    const nameLower = name.toLowerCase();
+    const matched = restrictedMovements.find((r) => nameLower.includes(r) || r.includes(nameLower));
+    if (matched) setRestrictedWarning(name);
+    else setRestrictedWarning(null);
+  };
+
+  const cancelSession = async () => {
+    if (!session) { setSession(null); setExercises([]); return; }
+    try {
+      await fetch(`/api/sessions/${session.id}`, { method: "DELETE" });
+    } catch (_) { /* ignore */ }
+    setSession(null);
+    setExercises([]);
+    setShowCancelConfirm(false);
+    router.push("/");
   };
 
   const updateSet = (exIdx: number, setIdx: number, field: keyof Set, value: number) => {
@@ -128,10 +154,28 @@ export default function LogPage() {
           <h2 className="font-semibold">{session.sessionName}</h2>
           <p className="text-xs text-gray-400">{new Date(session.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</p>
         </div>
-        <button onClick={completeSession} disabled={completing || exercises.length === 0} className="bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-          {completing ? "Saving..." : "✓ Complete"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowCancelConfirm(true)} className="text-xs text-gray-500 hover:text-red-400 transition-colors">Cancel</button>
+          <button onClick={completeSession} disabled={completing || exercises.length === 0} className="bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            {completing ? "Saving..." : exercises.some((e) => !e.saved) ? `✓ Complete (saving ${exercises.filter((e) => !e.saved).length} unsaved)` : "✓ Complete"}
+          </button>
+        </div>
       </div>
+      {showCancelConfirm && (
+        <div className="px-4 py-3 bg-red-950 border-b border-red-800 flex items-center justify-between gap-3">
+          <p className="text-sm text-red-300">Discard this session? All exercises will be lost.</p>
+          <div className="flex gap-2 shrink-0">
+            <button onClick={() => setShowCancelConfirm(false)} className="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-lg border border-gray-700 transition-colors">Keep</button>
+            <button onClick={cancelSession} className="text-xs bg-red-700 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg transition-colors">Discard</button>
+          </div>
+        </div>
+      )}
+      {restrictedWarning && (
+        <div className="px-4 py-2 bg-yellow-950 border-b border-yellow-800 flex items-center justify-between">
+          <p className="text-xs text-yellow-300">⚠️ <strong>{restrictedWarning}</strong> may conflict with your restricted movements. Log with caution.</p>
+          <button onClick={() => setRestrictedWarning(null)} className="text-yellow-500 hover:text-yellow-300 text-xs ml-3 shrink-0">✕</button>
+        </div>
+      )}
       <div className="flex-1 px-4 py-4 space-y-4 max-w-2xl mx-auto w-full">
         {exercises.map((ex, exIdx) => (
           <div key={exIdx} className={`bg-gray-900 rounded-xl border transition-colors ${ex.saved ? "border-green-800" : "border-gray-800"}`}>

@@ -9,24 +9,24 @@ export default function OnboardingPage() {
   const [error, setError] = useState("");
 
   const [form, setForm] = useState({
-    name: "Braden",
-    weightLbs: 253,
-    heightStr: "6'1.5\"",
-    age: 29,
+    name: "",
+    weightLbs: "" as number | string,
+    heightStr: "",
+    age: "" as number | string,
     sex: "male",
-    benchMaxLbs: 176,
-    squatMaxLbs: "",
-    deadliftMaxLbs: 225,
-    ohpMaxLbs: 100,
-    legPressMaxLbs: 360,
-    tbarRowWeightLbs: 90,
-    trainingDaysPerWeek: 4,
-    sessionLengthMin: 60,
+    benchMaxLbs: "" as number | string,
+    squatMaxLbs: "" as number | string,
+    deadliftMaxLbs: "" as number | string,
+    ohpMaxLbs: "" as number | string,
+    legPressMaxLbs: "" as number | string,
+    tbarRowWeightLbs: "" as number | string,
+    trainingDaysPerWeek: 4 as number | string,
+    sessionLengthMin: 60 as number | string,
     equipment: "commercial gym",
     primaryGoal: "hypertrophy",
     secondaryGoal: "strength",
-    injuryNotes: "fractured vertebrae, low back",
-    restrictedMovements: "heavy axial spinal loading, deep squat, heavy deadlift",
+    injuryNotes: "",
+    restrictedMovements: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {

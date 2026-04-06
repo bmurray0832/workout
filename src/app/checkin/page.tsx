@@ -16,6 +16,7 @@ export default function CheckInPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [newPlateaus, setNewPlateaus] = useState<{ exerciseName: string; stalledWeeks: number }[]>([]);
   const [history, setHistory] = useState<CheckIn[]>([]);
   const [lastCheckIn, setLastCheckIn] = useState<CheckIn | null>(null);
   const [daysAgo, setDaysAgo] = useState<number | null>(null);
@@ -40,12 +41,29 @@ export default function CheckInPage() {
     setLoading(true);
     try {
       await fetch("/api/checkin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bodyweightLbs: parseFloat(form.bodyweightLbs), sleepHours: parseFloat(form.sleepHours), sleepQuality: form.sleepQuality, stressLevel: form.stressLevel, energyScore: form.energyScore, recoveryScore: form.recoveryScore, avgCalories: form.avgCalories ? parseInt(form.avgCalories) : null, avgProteinG: form.avgProteinG ? parseInt(form.avgProteinG) : null, nutritionNotes: form.nutritionNotes || null, wins: form.wins || null, struggles: form.struggles || null, notes: form.notes || null, date: new Date().toISOString() }) });
+      const plateaus = await fetch("/api/plateaus").then((r) => r.json()).catch(() => []);
+      setNewPlateaus(plateaus ?? []);
       setSaved(true);
-      setTimeout(() => router.push("/"), 1500);
+      setTimeout(() => router.push("/"), plateaus?.length > 0 ? 4000 : 1500);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
 
-  if (saved) return <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center gap-4"><div className="text-5xl">✓</div><h2 className="text-xl font-bold">Check-in saved</h2><p className="text-gray-400 text-sm">Your data is feeding into plateau detection and progress analysis.</p></div>;
+  if (saved) return (
+    <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center gap-4 px-6">
+      <div className="text-5xl">✓</div>
+      <h2 className="text-xl font-bold">Check-in saved</h2>
+      <p className="text-gray-400 text-sm">Your data is feeding into plateau detection and progress analysis.</p>
+      {newPlateaus.length > 0 && (
+        <div className="mt-2 w-full max-w-sm bg-orange-950 border border-orange-700 rounded-xl p-4 space-y-2">
+          <p className="text-sm font-semibold text-orange-300">⚠️ {newPlateaus.length} plateau{newPlateaus.length > 1 ? "s" : ""} detected</p>
+          {newPlateaus.map((p, i) => (
+            <p key={i} className="text-xs text-orange-400">{p.exerciseName} — stalled {p.stalledWeeks} week{p.stalledWeeks > 1 ? "s" : ""}</p>
+          ))}
+          <button onClick={() => router.push("/plateaus")} className="mt-1 w-full text-xs bg-orange-800 hover:bg-orange-700 text-white py-2 rounded-lg transition-colors">View Plateaus →</button>
+        </div>
+      )}
+    </div>
+  );
 
   const INPUT = "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500";
 

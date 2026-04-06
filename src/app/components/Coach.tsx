@@ -68,8 +68,10 @@ export default function Coach() {
           <span className="text-xs text-gray-500">{today}</span>
         </div>
         <div className="flex items-center gap-2">
-          {lastRefreshed && state === "done" && (
-            <span className="text-xs text-gray-600">{formatTimeAgo(lastRefreshed)}</span>
+          {lastRefreshed && (
+            <span className={`text-xs ${Date.now() - lastRefreshed.getTime() > 4 * 60 * 60 * 1000 ? "text-yellow-600" : "text-gray-600"}`}>
+              {Date.now() - lastRefreshed.getTime() > 4 * 60 * 60 * 1000 ? "⚠️ " : ""}{formatTimeAgo(lastRefreshed)}
+            </span>
           )}
           <button onClick={fetchBriefing} disabled={state === "loading"} className="text-xs text-gray-400 hover:text-white transition-colors disabled:opacity-40">
             {state === "loading" ? <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />Thinking...</span> : "↻ Refresh"}

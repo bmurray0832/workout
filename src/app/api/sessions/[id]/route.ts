@@ -18,3 +18,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   });
   return NextResponse.json(session);
 }
+
+export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+  await db.exerciseLog.deleteMany({ where: { sessionId: parseInt(params.id) } });
+  await db.workoutSession.delete({ where: { id: parseInt(params.id) } });
+  return new NextResponse(null, { status: 204 });
+}

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 type ExerciseLog = { id: number; exerciseName: string; muscleGroup: string | null; sets: number; reps: number; weightLbs: number; rpe: number | null; notes: string | null };
-type Session = { id: number; sessionName: string; date: string; completed: boolean; durationMin: number | null; exercises: ExerciseLog[]; program: { name: string } | null };
+type Session = { id: number; sessionName: string; date: string; completed: boolean; durationMin: number | null; notes: string | null; exercises: ExerciseLog[]; program: { name: string } | null };
 
 function summarizeExercises(logs: ExerciseLog[]) {
   const map: Record<string, { maxWeight: number; totalSets: number; reps: number }> = {};
@@ -23,10 +23,22 @@ export default function HistoryPage() {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [view, setView] = useState<"sessions" | "progression">("sessions");
   const [selectedExercise, setSelectedExercise] = useState("");
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  useEffect(() => {
+  const loadSessions = () => {
     fetch("/api/sessions?limit=30").then((r) => r.json()).then((data) => { setSessions(data); setLoading(false); });
-  }, []);
+  };
+
+  useEffect(() => { loadSessions(); }, []);
+
+  const deleteSession = async (id: number) => {
+    setDeletingId(id);
+    try {
+      await fetch(`/api/sessions/${id}`, { method: "DELETE" });
+      setSessions((prev) => prev.filter((s) => s.id !== id));
+      if (expanded === id) setExpanded(null);
+    } catch (err) { console.error(err); } finally { setDeletingId(null); }
+  };
 
   const allExerciseNames = Array.from(new Set(sessions.flatMap((s) => s.exercises.map((e) => e.exerciseName)))).sort();
 
@@ -86,6 +98,17 @@ export default function HistoryPage() {
                             <span className="text-sm font-mono font-medium">{stats.maxWeight}<span className="text-xs text-gray-400 ml-0.5">lbs</span></span>
                           </div>
                         ))}
+                        {session.notes && (
+                          <div className="pt-2 border-t border-gray-800">
+                            <p className="text-xs text-gray-500 mb-0.5">Notes</p>
+                            <p className="text-sm text-gray-300">{session.notes}</p>
+                          </div>
+                        )}
+                        <div className="pt-2 border-t border-gray-800 flex justify-end">
+                          <button onClick={() => deleteSession(session.id)} disabled={deletingId === session.id} className="text-xs text-gray-600 hover:text-red-400 disabled:opacity-40 transition-colors">
+                            {deletingId === session.id ? "Deleting..." : "Delete session"}
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
