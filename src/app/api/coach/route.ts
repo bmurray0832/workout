@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { db, getUserProfile, getActiveProgram } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function GET() {
@@ -44,33 +46,7 @@ export async function GET() {
 
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
-  const prompt = `You are a concise, data-driven personal training coach. Give a sharp, practical daily briefing. No fluff. Be direct and specific.
-
-TODAY: ${today}
-ATHLETE: ${profile.name}, ${profile.weightLbs}lbs, ${profile.age}yo, goal: ${profile.primaryGoal}
-INJURY: ${profile.injuryNotes ?? "none"}
-
-PROGRAM: ${programContext}
-RECENT SESSIONS:
-${sessionSummary}
-
-CHECK-IN: ${checkInSummary}
-NUTRITION: ${nutritionSummary}
-PLATEAUS: ${plateauSummary}
-
-Write a briefing in exactly these 4 sections. Keep each section to 2-3 sentences max. Be specific — use their actual numbers.
-
-**Today's Outlook**
-[What kind of training day should today be? Rest, train hard, or moderate? Which session is next?]
-
-**Recovery Read**
-[Honest assessment of recovery state based on sleep, stress, and energy. Any red flags?]
-
-**Nutrition Today**
-[One specific, actionable nutrition focus with a number.]
-
-**Goal Pulse**
-[Brief progress update. One thing to focus on this week.]`;
+  const prompt = `You are a concise, data-driven personal training coach. Give a sharp, practical daily briefing. No fluff. Be direct and specific.\n\nTODAY: ${today}\nATHLETE: ${profile.name}, ${profile.weightLbs}lbs, ${profile.age}yo, goal: ${profile.primaryGoal}\nINJURY: ${profile.injuryNotes ?? "none"}\n\nPROGRAM: ${programContext}\nRECENT SESSIONS:\n${sessionSummary}\n\nCHECK-IN: ${checkInSummary}\nNUTRITION: ${nutritionSummary}\nPLATEAUS: ${plateauSummary}\n\nWrite a briefing in exactly these 4 sections. Keep each section to 2-3 sentences max. Be specific — use their actual numbers.\n\n**Today's Outlook**\n[What kind of training day should today be? Rest, train hard, or moderate? Which session is next?]\n\n**Recovery Read**\n[Honest assessment of recovery state based on sleep, stress, and energy. Any red flags?]\n\n**Nutrition Today**\n[One specific, actionable nutrition focus with a number.]\n\n**Goal Pulse**\n[Brief progress update. One thing to focus on this week.]`;
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
