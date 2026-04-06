@@ -2,4 +2,4 @@
 buildCommand = "npm install && npx prisma generate && DATABASE_URL=file:/tmp/build.db npx prisma db push && DATABASE_URL=file:/tmp/build.db npx next build"
 
 [deploy]
-startCommand = "npx prisma db push && npm start"
+startCommand = "mkdir -p /data && npx prisma db push && npm start"
