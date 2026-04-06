@@ -140,9 +140,50 @@ export default function OnboardingPage() {
             <div className="grid grid-cols-2 gap-4">
               <Field label="Days per week" name="trainingDaysPerWeek" type="number" form={f} onChange={handleChange} />
               <Field label="Max session length (min)" name="sessionLengthMin" type="number" form={f} onChange={handleChange} />
-              <Field label="Equipment" name="equipment" placeholder="commercial gym" form={f} onChange={handleChange} />
-              <Field label="Primary Goal" name="primaryGoal" placeholder="hypertrophy" form={f} onChange={handleChange} />
-              <Field label="Secondary Goal" name="secondaryGoal" placeholder="strength" form={f} onChange={handleChange} />
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-300">Equipment</label>
+                <select name="equipment" value={form.equipment} onChange={handleChange} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                  <option value="commercial gym">Commercial Gym (full equipment)</option>
+                  <option value="home gym with barbell and rack">Home Gym — Barbell &amp; Rack</option>
+                  <option value="home gym with dumbbells only">Home Gym — Dumbbells Only</option>
+                  <option value="home gym with cables and machines">Home Gym — Cables &amp; Machines</option>
+                  <option value="bodyweight only">Bodyweight Only</option>
+                  <option value="resistance bands">Resistance Bands</option>
+                  <option value="kettlebells">Kettlebells</option>
+                  <option value="hotel gym / minimal equipment">Hotel Gym / Minimal Equipment</option>
+                  <option value="crossfit box">CrossFit Box</option>
+                  <option value="powerlifting gym">Powerlifting Gym</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-300">Primary Goal</label>
+                <select name="primaryGoal" value={form.primaryGoal} onChange={handleChange} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                  <option value="hypertrophy">Hypertrophy — Build muscle size</option>
+                  <option value="strength">Strength — Maximize lifts</option>
+                  <option value="fat loss">Fat Loss — Lose body fat</option>
+                  <option value="body recomposition">Body Recomposition — Muscle + fat loss</option>
+                  <option value="powerlifting">Powerlifting — Compete in S/B/D</option>
+                  <option value="athletic performance">Athletic Performance</option>
+                  <option value="general fitness">General Fitness &amp; Health</option>
+                  <option value="endurance">Endurance &amp; Conditioning</option>
+                  <option value="mobility and flexibility">Mobility &amp; Flexibility</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-300">Secondary Goal</label>
+                <select name="secondaryGoal" value={form.secondaryGoal} onChange={handleChange} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                  <option value="">None</option>
+                  <option value="hypertrophy">Hypertrophy — Build muscle size</option>
+                  <option value="strength">Strength — Maximize lifts</option>
+                  <option value="fat loss">Fat Loss — Lose body fat</option>
+                  <option value="body recomposition">Body Recomposition — Muscle + fat loss</option>
+                  <option value="powerlifting">Powerlifting — Compete in S/B/D</option>
+                  <option value="athletic performance">Athletic Performance</option>
+                  <option value="general fitness">General Fitness &amp; Health</option>
+                  <option value="endurance">Endurance &amp; Conditioning</option>
+                  <option value="mobility and flexibility">Mobility &amp; Flexibility</option>
+                </select>
+              </div>
             </div>
           </Section>
           <Section title="Injury Notes">
