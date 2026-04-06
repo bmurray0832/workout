@@ -2,9 +2,16 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { db, getUserProfile, getActiveProgram } from "@/lib/db";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
 export async function GET() {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json(
+      { error: "ANTHROPIC_API_KEY is not configured. Add it to your Railway environment variables." },
+      { status: 500 }
+    );
+  }
+
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
   const [profile, program, recentSessions, lastCheckIn, plateaus] = await Promise.all([
     getUserProfile(),
     getActiveProgram(),
@@ -81,7 +88,12 @@ Write a briefing in exactly these 4 sections. Keep each section to 2-3 sentences
           if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") controller.enqueue(encoder.encode(chunk.delta.text));
         }
         controller.close();
-      } catch (err) { console.error(err); controller.error(err); }
+      } catch (err) {
+        console.error("Coach stream error:", err);
+        const msg = err instanceof Error ? err.message : String(err);
+        controller.enqueue(encoder.encode(`\n\n[Error: ${msg}]`));
+        controller.close();
+      }
     },
   });
 
