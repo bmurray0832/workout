@@ -3,6 +3,40 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+type FormData = Record<string, unknown>;
+
+function Field({ label, name, type = "text", placeholder = "", form, onChange }: {
+  label: string;
+  name: string;
+  type?: string;
+  placeholder?: string;
+  form: FormData;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-sm font-medium text-gray-300">{label}</label>
+      <input
+        type={type}
+        name={name}
+        value={String(form[name] ?? "")}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500"
+      />
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
+      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">{title}</h2>
+      {children}
+    </div>
+  );
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -66,19 +100,7 @@ export default function OnboardingPage() {
     }
   };
 
-  const Field = ({ label, name, type = "text", placeholder = "" }: { label: string; name: string; type?: string; placeholder?: string }) => (
-    <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-300">{label}</label>
-      <input
-        type={type}
-        name={name}
-        value={String((form as Record<string, unknown>)[name] ?? "")}
-        onChange={handleChange}
-        placeholder={placeholder}
-        className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500"
-      />
-    </div>
-  );
+  const f = form as FormData;
 
   return (
     <div className="min-h-screen bg-gray-950 text-white py-12 px-4">
@@ -90,10 +112,10 @@ export default function OnboardingPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <Section title="Personal">
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Name" name="name" />
-              <Field label="Age" name="age" type="number" />
-              <Field label="Weight (lbs)" name="weightLbs" type="number" />
-              <Field label="Height" name="heightStr" placeholder="6'1.5&quot;" />
+              <Field label="Name" name="name" form={f} onChange={handleChange} />
+              <Field label="Age" name="age" type="number" form={f} onChange={handleChange} />
+              <Field label="Weight (lbs)" name="weightLbs" type="number" form={f} onChange={handleChange} />
+              <Field label="Height" name="heightStr" placeholder="6'1.5&quot;" form={f} onChange={handleChange} />
             </div>
             <div className="mt-4">
               <label className="text-sm font-medium text-gray-300">Sex</label>
@@ -106,21 +128,21 @@ export default function OnboardingPage() {
           <Section title="Estimated 1RMs (lbs)">
             <p className="text-xs text-gray-500 mb-3">Leave blank if unknown. These update automatically as you log workouts.</p>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Bench Press" name="benchMaxLbs" type="number" placeholder="176" />
-              <Field label="Squat" name="squatMaxLbs" type="number" placeholder="Leave blank if injured" />
-              <Field label="Deadlift" name="deadliftMaxLbs" type="number" placeholder="225" />
-              <Field label="Overhead Press" name="ohpMaxLbs" type="number" placeholder="100" />
-              <Field label="Leg Press (working weight)" name="legPressMaxLbs" type="number" placeholder="360" />
-              <Field label="T-Bar Row (weight per side)" name="tbarRowWeightLbs" type="number" placeholder="90" />
+              <Field label="Bench Press" name="benchMaxLbs" type="number" placeholder="176" form={f} onChange={handleChange} />
+              <Field label="Squat" name="squatMaxLbs" type="number" placeholder="Leave blank if injured" form={f} onChange={handleChange} />
+              <Field label="Deadlift" name="deadliftMaxLbs" type="number" placeholder="225" form={f} onChange={handleChange} />
+              <Field label="Overhead Press" name="ohpMaxLbs" type="number" placeholder="100" form={f} onChange={handleChange} />
+              <Field label="Leg Press (working weight)" name="legPressMaxLbs" type="number" placeholder="360" form={f} onChange={handleChange} />
+              <Field label="T-Bar Row (weight per side)" name="tbarRowWeightLbs" type="number" placeholder="90" form={f} onChange={handleChange} />
             </div>
           </Section>
           <Section title="Training Setup">
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Days per week" name="trainingDaysPerWeek" type="number" />
-              <Field label="Max session length (min)" name="sessionLengthMin" type="number" />
-              <Field label="Equipment" name="equipment" placeholder="commercial gym" />
-              <Field label="Primary Goal" name="primaryGoal" placeholder="hypertrophy" />
-              <Field label="Secondary Goal" name="secondaryGoal" placeholder="strength" />
+              <Field label="Days per week" name="trainingDaysPerWeek" type="number" form={f} onChange={handleChange} />
+              <Field label="Max session length (min)" name="sessionLengthMin" type="number" form={f} onChange={handleChange} />
+              <Field label="Equipment" name="equipment" placeholder="commercial gym" form={f} onChange={handleChange} />
+              <Field label="Primary Goal" name="primaryGoal" placeholder="hypertrophy" form={f} onChange={handleChange} />
+              <Field label="Secondary Goal" name="secondaryGoal" placeholder="strength" form={f} onChange={handleChange} />
             </div>
           </Section>
           <Section title="Injury Notes">
@@ -141,15 +163,6 @@ export default function OnboardingPage() {
           </button>
         </form>
       </div>
-    </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">{title}</h2>
-      {children}
     </div>
   );
 }
