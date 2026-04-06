@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const profile = await db.userProfile.findUnique({ where: { id: 1 } });
   if (!profile) return NextResponse.json(null, { status: 404 });
