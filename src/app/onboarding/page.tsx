@@ -15,14 +15,14 @@ function Field({ label, name, type = "text", placeholder = "", form, onChange }:
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-300">{label}</label>
+      <label className="text-sm font-medium text-zinc-300">{label}</label>
       <input
         type={type}
         name={name}
         value={String(form[name] ?? "")}
         onChange={onChange}
         placeholder={placeholder}
-        className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500"
+        className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500"
       />
     </div>
   );
@@ -30,8 +30,8 @@ function Field({ label, name, type = "text", placeholder = "", form, onChange }:
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">{title}</h2>
+    <div className="bg-zinc-950 rounded-xl p-5 border border-zinc-800">
+      <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">{title}</h2>
       {children}
     </div>
   );
@@ -103,11 +103,11 @@ export default function OnboardingPage() {
   const f = form as FormData;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white py-12 px-4">
+    <div className="min-h-screen bg-black text-white py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Set Up Your Profile</h1>
-          <p className="text-gray-400">This gets filled in once. Every prompt auto-populates from here.</p>
+          <p className="text-zinc-400">This gets filled in once. Every prompt auto-populates from here.</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <Section title="Personal">
@@ -118,15 +118,15 @@ export default function OnboardingPage() {
               <Field label="Height" name="heightStr" placeholder="6'1.5&quot;" form={f} onChange={handleChange} />
             </div>
             <div className="mt-4">
-              <label className="text-sm font-medium text-gray-300">Sex</label>
-              <select name="sex" value={form.sex} onChange={handleChange} className="mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+              <label className="text-sm font-medium text-zinc-300">Sex</label>
+              <select name="sex" value={form.sex} onChange={handleChange} className="mt-1 w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500">
                 <option value="male">Male</option>
                 <option value="female">Female</option>
               </select>
             </div>
           </Section>
           <Section title="Estimated 1RMs (lbs)">
-            <p className="text-xs text-gray-500 mb-3">Leave blank if unknown. These update automatically as you log workouts.</p>
+            <p className="text-xs text-zinc-500 mb-3">Leave blank if unknown. These update automatically as you log workouts.</p>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Bench Press" name="benchMaxLbs" type="number" placeholder="176" form={f} onChange={handleChange} />
               <Field label="Squat" name="squatMaxLbs" type="number" placeholder="Leave blank if injured" form={f} onChange={handleChange} />
@@ -141,8 +141,8 @@ export default function OnboardingPage() {
               <Field label="Days per week" name="trainingDaysPerWeek" type="number" form={f} onChange={handleChange} />
               <Field label="Max session length (min)" name="sessionLengthMin" type="number" form={f} onChange={handleChange} />
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-300">Equipment</label>
-                <select name="equipment" value={form.equipment} onChange={handleChange} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                <label className="text-sm font-medium text-zinc-300">Equipment</label>
+                <select name="equipment" value={form.equipment} onChange={handleChange} className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500">
                   <option value="commercial gym">Commercial Gym (full equipment)</option>
                   <option value="home gym with barbell and rack">Home Gym — Barbell &amp; Rack</option>
                   <option value="home gym with dumbbells only">Home Gym — Dumbbells Only</option>
@@ -156,8 +156,8 @@ export default function OnboardingPage() {
                 </select>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-300">Primary Goal</label>
-                <select name="primaryGoal" value={form.primaryGoal} onChange={handleChange} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                <label className="text-sm font-medium text-zinc-300">Primary Goal</label>
+                <select name="primaryGoal" value={form.primaryGoal} onChange={handleChange} className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500">
                   <option value="hypertrophy">Hypertrophy — Build muscle size</option>
                   <option value="strength">Strength — Maximize lifts</option>
                   <option value="fat loss">Fat Loss — Lose body fat</option>
@@ -170,8 +170,8 @@ export default function OnboardingPage() {
                 </select>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-300">Secondary Goal</label>
-                <select name="secondaryGoal" value={form.secondaryGoal} onChange={handleChange} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                <label className="text-sm font-medium text-zinc-300">Secondary Goal</label>
+                <select name="secondaryGoal" value={form.secondaryGoal} onChange={handleChange} className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500">
                   <option value="">None</option>
                   <option value="hypertrophy">Hypertrophy — Build muscle size</option>
                   <option value="strength">Strength — Maximize lifts</option>
@@ -189,17 +189,17 @@ export default function OnboardingPage() {
           <Section title="Injury Notes">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-300">Injury description</label>
-                <textarea name="injuryNotes" value={form.injuryNotes} onChange={handleChange} rows={2} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500 resize-none" />
+                <label className="text-sm font-medium text-zinc-300">Injury description</label>
+                <textarea name="injuryNotes" value={form.injuryNotes} onChange={handleChange} rows={2} className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500 resize-none" />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-300">Restricted movements</label>
-                <textarea name="restrictedMovements" value={form.restrictedMovements} onChange={handleChange} rows={2} className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500 resize-none" />
+                <label className="text-sm font-medium text-zinc-300">Restricted movements</label>
+                <textarea name="restrictedMovements" value={form.restrictedMovements} onChange={handleChange} rows={2} className="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500 resize-none" />
               </div>
             </div>
           </Section>
           {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors">
+          <button type="submit" disabled={loading} className="w-full bg-amber-500 hover:bg-amber-400 disabled:bg-zinc-800 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors">
             {loading ? "Saving..." : "Save Profile & Go to Dashboard →"}
           </button>
         </form>

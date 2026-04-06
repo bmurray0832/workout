@@ -38,12 +38,12 @@ export default function PlateausPage() {
     } catch (err) { console.error(err); } finally { setResolving(null); }
   };
 
-  if (loading) return <div className="min-h-screen bg-gray-950 flex items-center justify-center"><p className="text-gray-400">Loading...</p></div>;
+  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center"><p className="text-zinc-400">Loading...</p></div>;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
-      <header className="border-b border-gray-800 px-4 py-3 flex items-center justify-between">
-        <button onClick={() => router.push("/")} className="text-gray-400 hover:text-white text-sm">← Dashboard</button>
+    <div className="min-h-screen bg-black text-white flex flex-col">
+      <header className="border-b border-zinc-800 px-4 py-3 flex items-center justify-between">
+        <button onClick={() => router.push("/")} className="text-zinc-400 hover:text-white text-sm">← Dashboard</button>
         <span className="font-semibold text-sm">Plateaus</span>
         <div className="w-16" />
       </header>
@@ -52,31 +52,31 @@ export default function PlateausPage() {
         {plateaus.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <p className="text-4xl mb-4">✓</p>
-            <p className="text-gray-300 font-medium">No active plateaus</p>
-            <p className="text-gray-500 text-sm mt-1">Keep logging sessions — plateaus are detected automatically from check-ins.</p>
+            <p className="text-zinc-300 font-medium">No active plateaus</p>
+            <p className="text-zinc-500 text-sm mt-1">Keep logging sessions — plateaus are detected automatically from check-ins.</p>
           </div>
         ) : (
           <>
-            <p className="text-xs text-gray-500">{plateaus.length} unresolved plateau{plateaus.length > 1 ? "s" : ""} detected from your check-in history.</p>
+            <p className="text-xs text-zinc-500">{plateaus.length} unresolved plateau{plateaus.length > 1 ? "s" : ""} detected from your check-in history.</p>
             {plateaus.map((p) => (
-              <div key={p.id} className="bg-gray-900 rounded-xl border border-orange-900">
-                <div className="px-4 py-4 border-b border-gray-800">
+              <div key={p.id} className="bg-zinc-950 rounded-xl border border-orange-900">
+                <div className="px-4 py-4 border-b border-zinc-800">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-semibold">{p.exerciseName}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-zinc-400 mt-0.5">
                         Stalled for {p.stalledWeeks} week{p.stalledWeeks > 1 ? "s" : ""} · Last weight: <span className="text-white font-mono">{p.lastWeight}lbs</span>
                       </p>
-                      <p className="text-xs text-gray-600 mt-0.5">Detected {new Date(p.detectedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
+                      <p className="text-xs text-zinc-600 mt-0.5">Detected {new Date(p.detectedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
                     </div>
                     <span className="text-xs bg-orange-900 border border-orange-700 text-orange-300 px-2 py-0.5 rounded-full shrink-0">plateau</span>
                   </div>
                 </div>
 
                 {p.aiAnalysis && (
-                  <div className="px-4 py-3 border-b border-gray-800">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">AI Analysis</p>
-                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{p.aiAnalysis}</p>
+                  <div className="px-4 py-3 border-b border-zinc-800">
+                    <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-2">AI Analysis</p>
+                    <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">{p.aiAnalysis}</p>
                   </div>
                 )}
 
@@ -88,11 +88,11 @@ export default function PlateausPage() {
                         value={resolveNotes[p.id] ?? ""}
                         onChange={(e) => setResolveNotes((prev) => ({ ...prev, [p.id]: e.target.value }))}
                         placeholder="How did you break through it? (optional)"
-                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-green-500"
+                        className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-green-500"
                       />
                       <div className="flex gap-2">
-                        <button onClick={() => setShowResolveFor(null)} className="flex-1 text-xs text-gray-400 hover:text-white border border-gray-700 py-2 rounded-lg transition-colors">Cancel</button>
-                        <button onClick={() => resolvePlateau(p.id)} disabled={resolving === p.id} className="flex-1 text-xs bg-green-700 hover:bg-green-600 disabled:bg-gray-700 text-white font-medium py-2 rounded-lg transition-colors">
+                        <button onClick={() => setShowResolveFor(null)} className="flex-1 text-xs text-zinc-400 hover:text-white border border-zinc-700 py-2 rounded-lg transition-colors">Cancel</button>
+                        <button onClick={() => resolvePlateau(p.id)} disabled={resolving === p.id} className="flex-1 text-xs bg-green-700 hover:bg-green-600 disabled:bg-zinc-800 text-white font-medium py-2 rounded-lg transition-colors">
                           {resolving === p.id ? "Resolving..." : "Mark Resolved ✓"}
                         </button>
                       </div>

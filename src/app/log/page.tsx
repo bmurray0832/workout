@@ -120,24 +120,24 @@ export default function LogPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+      <div className="min-h-screen bg-black text-white flex flex-col">
         <TopBar />
         <div className="flex-1 flex flex-col items-center justify-center px-6 gap-6">
           <div className="w-full max-w-md">
             <h1 className="text-2xl font-bold mb-2">Start a Session</h1>
-            <p className="text-gray-400 text-sm mb-6">Name it, then start logging.</p>
-            <div className="bg-gray-900 rounded-xl p-5 border border-gray-800 space-y-4">
+            <p className="text-zinc-400 text-sm mb-6">Name it, then start logging.</p>
+            <div className="bg-zinc-950 rounded-xl p-5 border border-zinc-800 space-y-4">
               <div>
-                <label className="text-sm text-gray-400 mb-1 block">Session name</label>
-                <input type="text" value={sessionName} onChange={(e) => setSessionName(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500" placeholder="e.g. Upper A, Push Day" />
+                <label className="text-sm text-zinc-400 mb-1 block">Session name</label>
+                <input type="text" value={sessionName} onChange={(e) => setSessionName(e.target.value)} className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" placeholder="e.g. Upper A, Push Day" />
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {["Upper A", "Lower A", "Upper B", "Lower B", "Push", "Pull"].map((name) => (
-                  <button key={name} onClick={() => setSessionName(name)} className="text-xs bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg py-2 px-3 transition-colors">{name}</button>
+                  <button key={name} onClick={() => setSessionName(name)} className="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg py-2 px-3 transition-colors">{name}</button>
                 ))}
               </div>
             </div>
-            <button onClick={startSession} disabled={starting} className="mt-4 w-full bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 text-white font-semibold py-3 rounded-xl transition-colors">
+            <button onClick={startSession} disabled={starting} className="mt-4 w-full bg-amber-500 hover:bg-amber-400 disabled:bg-zinc-800 text-white font-semibold py-3 rounded-xl transition-colors">
               {starting ? "Starting..." : "Start Session →"}
             </button>
           </div>
@@ -147,16 +147,16 @@ export default function LogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       <TopBar />
-      <div className="px-4 py-3 bg-gray-900 border-b border-gray-800 flex items-center justify-between">
+      <div className="px-4 py-3 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between">
         <div>
           <h2 className="font-semibold">{session.sessionName}</h2>
-          <p className="text-xs text-gray-400">{new Date(session.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</p>
+          <p className="text-xs text-zinc-400">{new Date(session.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setShowCancelConfirm(true)} className="text-xs text-gray-500 hover:text-red-400 transition-colors">Cancel</button>
-          <button onClick={completeSession} disabled={completing || exercises.length === 0} className="bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          <button onClick={() => setShowCancelConfirm(true)} className="text-xs text-zinc-500 hover:text-red-400 transition-colors">Cancel</button>
+          <button onClick={completeSession} disabled={completing || exercises.length === 0} className="bg-green-600 hover:bg-green-500 disabled:bg-zinc-800 disabled:cursor-not-allowed text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             {completing ? "Saving..." : exercises.some((e) => !e.saved) ? `✓ Complete (saving ${exercises.filter((e) => !e.saved).length} unsaved)` : "✓ Complete"}
           </button>
         </div>
@@ -165,29 +165,29 @@ export default function LogPage() {
         <div className="px-4 py-3 bg-red-950 border-b border-red-800 flex items-center justify-between gap-3">
           <p className="text-sm text-red-300">Discard this session? All exercises will be lost.</p>
           <div className="flex gap-2 shrink-0">
-            <button onClick={() => setShowCancelConfirm(false)} className="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-lg border border-gray-700 transition-colors">Keep</button>
+            <button onClick={() => setShowCancelConfirm(false)} className="text-xs text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg border border-zinc-700 transition-colors">Keep</button>
             <button onClick={cancelSession} className="text-xs bg-red-700 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg transition-colors">Discard</button>
           </div>
         </div>
       )}
       {restrictedWarning && (
         <div className="px-4 py-2 bg-yellow-950 border-b border-yellow-800 flex items-center justify-between">
-          <p className="text-xs text-yellow-300">⚠️ <strong>{restrictedWarning}</strong> may conflict with your restricted movements. Log with caution.</p>
+          <p className="text-xs text-yellow-300"><strong>{restrictedWarning}</strong> may conflict with your restricted movements. Log with caution.</p>
           <button onClick={() => setRestrictedWarning(null)} className="text-yellow-500 hover:text-yellow-300 text-xs ml-3 shrink-0">✕</button>
         </div>
       )}
       <div className="flex-1 px-4 py-4 space-y-4 max-w-2xl mx-auto w-full">
         {exercises.map((ex, exIdx) => (
-          <div key={exIdx} className={`bg-gray-900 rounded-xl border transition-colors ${ex.saved ? "border-green-800" : "border-gray-800"}`}>
-            <div className="px-4 py-3 border-b border-gray-800 flex items-center justify-between">
-              <div><p className="font-medium text-sm">{ex.exerciseName}</p><p className="text-xs text-gray-500">{ex.muscleGroup}</p></div>
+          <div key={exIdx} className={`bg-zinc-950 rounded-xl border transition-colors ${ex.saved ? "border-green-800" : "border-zinc-800"}`}>
+            <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+              <div><p className="font-medium text-sm">{ex.exerciseName}</p><p className="text-xs text-zinc-500">{ex.muscleGroup}</p></div>
               <div className="flex items-center gap-2">
                 {ex.saved && <span className="text-xs text-green-400">✓ saved</span>}
-                <button onClick={() => removeExercise(exIdx)} className="text-gray-600 hover:text-red-400 text-sm transition-colors">✕</button>
+                <button onClick={() => removeExercise(exIdx)} className="text-zinc-600 hover:text-red-400 text-sm transition-colors">✕</button>
               </div>
             </div>
             <div className="px-4 pt-3">
-              <div className="grid grid-cols-12 gap-1 text-xs text-gray-500 mb-2 px-1">
+              <div className="grid grid-cols-12 gap-1 text-xs text-zinc-500 mb-2 px-1">
                 <span className="col-span-1">SET</span>
                 <span className="col-span-4">WEIGHT (lbs)</span>
                 <span className="col-span-3">REPS</span>
@@ -196,38 +196,38 @@ export default function LogPage() {
               </div>
               {ex.sets.map((set, setIdx) => (
                 <div key={setIdx} className="grid grid-cols-12 gap-1 mb-2 items-center">
-                  <span className="col-span-1 text-xs text-gray-500 text-center">{setIdx + 1}</span>
-                  <input type="number" value={set.weightLbs || ""} onChange={(e) => updateSet(exIdx, setIdx, "weightLbs", parseFloat(e.target.value) || 0)} placeholder="0" className="col-span-4 bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500" />
-                  <input type="number" value={set.reps || ""} onChange={(e) => updateSet(exIdx, setIdx, "reps", parseInt(e.target.value) || 0)} placeholder="0" className="col-span-3 bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500" />
-                  <input type="number" value={set.rpe || ""} onChange={(e) => updateSet(exIdx, setIdx, "rpe", parseFloat(e.target.value) || 0)} placeholder="—" min="1" max="10" step="0.5" className="col-span-3 bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500" />
-                  <button onClick={() => removeSet(exIdx, setIdx)} className="col-span-1 text-gray-600 hover:text-red-400 text-xs text-center transition-colors">✕</button>
+                  <span className="col-span-1 text-xs text-zinc-500 text-center">{setIdx + 1}</span>
+                  <input type="number" value={set.weightLbs || ""} onChange={(e) => updateSet(exIdx, setIdx, "weightLbs", parseFloat(e.target.value) || 0)} placeholder="0" className="col-span-4 bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                  <input type="number" value={set.reps || ""} onChange={(e) => updateSet(exIdx, setIdx, "reps", parseInt(e.target.value) || 0)} placeholder="0" className="col-span-3 bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                  <input type="number" value={set.rpe || ""} onChange={(e) => updateSet(exIdx, setIdx, "rpe", parseFloat(e.target.value) || 0)} placeholder="—" min="1" max="10" step="0.5" className="col-span-3 bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                  <button onClick={() => removeSet(exIdx, setIdx)} className="col-span-1 text-zinc-600 hover:text-red-400 text-xs text-center transition-colors">✕</button>
                 </div>
               ))}
             </div>
             <div className="px-4 pb-2">
-              <input type="text" value={ex.notes} onChange={(e) => setExercises((prev) => prev.map((e2, i) => i === exIdx ? { ...e2, notes: e.target.value, saved: false } : e2))} placeholder="Notes (optional)" className="w-full bg-transparent text-xs text-gray-400 placeholder-gray-600 focus:outline-none py-1" />
+              <input type="text" value={ex.notes} onChange={(e) => setExercises((prev) => prev.map((e2, i) => i === exIdx ? { ...e2, notes: e.target.value, saved: false } : e2))} placeholder="Notes (optional)" className="w-full bg-transparent text-xs text-zinc-400 placeholder-gray-600 focus:outline-none py-1" />
             </div>
             <div className="px-4 pb-3 flex items-center gap-3">
-              <button onClick={() => addSet(exIdx)} className="text-xs text-blue-400 hover:text-blue-300 transition-colors">+ Add Set</button>
-              <button onClick={() => saveExercise(exIdx)} disabled={saving} className="ml-auto text-xs bg-gray-800 hover:bg-gray-700 border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">{saving ? "Saving..." : "Save Exercise"}</button>
+              <button onClick={() => addSet(exIdx)} className="text-xs text-amber-400 hover:text-amber-300 transition-colors">+ Add Set</button>
+              <button onClick={() => saveExercise(exIdx)} disabled={saving} className="ml-auto text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 px-3 py-1.5 rounded-lg transition-colors">{saving ? "Saving..." : "Save Exercise"}</button>
             </div>
           </div>
         ))}
         {!showPresets ? (
-          <button onClick={() => setShowPresets(true)} className="w-full border-2 border-dashed border-gray-800 hover:border-gray-600 rounded-xl py-4 text-gray-400 hover:text-white text-sm transition-colors">+ Add Exercise</button>
+          <button onClick={() => setShowPresets(true)} className="w-full border-2 border-dashed border-zinc-800 hover:border-zinc-600 rounded-xl py-4 text-zinc-400 hover:text-white text-sm transition-colors">+ Add Exercise</button>
         ) : (
-          <div className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+          <div className="bg-zinc-950 rounded-xl border border-zinc-800 p-4">
             <div className="flex gap-2 mb-4">
-              <input type="text" value={customExercise} onChange={(e) => setCustomExercise(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && customExercise.trim()) addExercise(customExercise.trim(), "Other"); }} placeholder="Type exercise name..." className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500" autoFocus />
-              <button onClick={() => customExercise.trim() && addExercise(customExercise.trim(), "Other")} className="bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 rounded-lg transition-colors">Add</button>
-              <button onClick={() => setShowPresets(false)} className="text-gray-400 hover:text-white text-sm px-3">✕</button>
+              <input type="text" value={customExercise} onChange={(e) => setCustomExercise(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && customExercise.trim()) addExercise(customExercise.trim(), "Other"); }} placeholder="Type exercise name..." className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-amber-500" autoFocus />
+              <button onClick={() => customExercise.trim() && addExercise(customExercise.trim(), "Other")} className="bg-amber-500 hover:bg-amber-400 text-white text-sm px-4 rounded-lg transition-colors">Add</button>
+              <button onClick={() => setShowPresets(false)} className="text-zinc-400 hover:text-white text-sm px-3">✕</button>
             </div>
             {Object.entries(EXERCISE_PRESETS).map(([group, exercises]) => (
               <div key={group} className="mb-3">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">{group}</p>
+                <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">{group}</p>
                 <div className="flex flex-wrap gap-2">
                   {exercises.map((name) => (
-                    <button key={name} onClick={() => addExercise(name, group)} className="text-xs bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-full px-3 py-1 transition-colors">{name}</button>
+                    <button key={name} onClick={() => addExercise(name, group)} className="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-full px-3 py-1 transition-colors">{name}</button>
                   ))}
                 </div>
               </div>
@@ -243,10 +243,10 @@ export default function LogPage() {
 function TopBar() {
   const router = useRouter();
   return (
-    <header className="border-b border-gray-800 px-4 py-3 flex items-center justify-between bg-gray-950">
-      <button onClick={() => router.push("/")} className="text-gray-400 hover:text-white text-sm">← Dashboard</button>
+    <header className="border-b border-zinc-800 px-4 py-3 flex items-center justify-between bg-black">
+      <button onClick={() => router.push("/")} className="text-zinc-400 hover:text-white text-sm">← Dashboard</button>
       <span className="font-semibold text-sm">Workout Log</span>
-      <button onClick={() => router.push("/history")} className="text-gray-400 hover:text-white text-sm">History</button>
+      <button onClick={() => router.push("/history")} className="text-zinc-400 hover:text-white text-sm">History</button>
     </header>
   );
 }
