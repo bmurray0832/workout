@@ -140,6 +140,89 @@ Weekly data:\n${checkInSummary || "No check-ins yet."}
 Analyze trends across bodyweight, sleep, energy, recovery, and stress. Give data-driven decisions on exactly what to change and why. Provide monthly review and reset targets for the next block.`;
 }
 
+export function buildMacroGuidePrompt(
+  profile: UserProfile,
+  recentCheckIns: WeeklyCheckIn[]
+): string {
+  const phase = profile.nutritionPhase ?? "maintain";
+  const currentTargets = profile.dailyCalorieTarget
+    ? `Current targets: ${profile.dailyCalorieTarget} kcal, ${profile.proteinTargetG}g protein, ${profile.carbTargetG}g carbs, ${profile.fatTargetG}g fat (${profile.mealsPerDay ?? 4} meals/day).`
+    : "No macro targets set yet.";
+
+  const checkInData = recentCheckIns
+    .slice(-8)
+    .map(
+      (c, i) =>
+        `Week ${i + 1}: ${c.bodyweightLbs}lbs${c.avgCalories ? ` | Cals: ${c.avgCalories}` : ""}${c.avgProteinG ? ` | Protein: ${c.avgProteinG}g` : ""} | Energy: ${c.energyScore}/10 | Recovery: ${c.recoveryScore}/10 | Sleep: ${c.sleepHours}h (${c.sleepQuality}/10)`
+    )
+    .join("\n");
+
+  return `You are an evidence-based sports nutritionist specializing in macronutrient programming for natural strength athletes. You do NOT provide meal plans or food lists — only macro targets, rationale, and adjustment protocols.
+
+ATHLETE STATS:
+- Weight: ${profile.weightLbs}lbs (${(profile.weightLbs / 2.205).toFixed(1)}kg)
+- Height: ${profile.heightStr}
+- Age: ${profile.age}, Sex: ${profile.sex}
+- Training: ${profile.trainingDaysPerWeek} days/week, ${profile.sessionLengthMin} min sessions
+- Phase: ${phase}
+- Injury: ${profile.injuryNotes ?? "none"}
+${profile.nutritionNotes ? `- Dietary notes: ${profile.nutritionNotes}` : ""}
+
+${currentTargets}
+
+${checkInData ? `RECENT CHECK-IN DATA:\n${checkInData}\n` : "No check-in data available yet."}
+
+Current lifts: Bench ~${profile.benchMaxLbs ?? "unknown"}lbs, Squat ~${profile.squatMaxLbs ?? "unknown"}lbs, Deadlift ~${profile.deadliftMaxLbs ?? "unknown"}lbs, OHP ~${profile.ohpMaxLbs ?? "unknown"}lbs.
+
+BUILD A COMPLETE MACRO PLANNING GUIDE covering these sections:
+
+1. TDEE BREAKDOWN
+   - Calculate BMR (Mifflin-St Jeor), apply activity multiplier based on training volume and intensity.
+   - Show the math so the athlete understands where the number comes from.
+
+2. PHASE-SPECIFIC MACRO TARGETS
+   - Based on current "${phase}" phase, set daily calorie target with clear surplus/deficit reasoning.
+   - Protein: scale by phase (higher during cuts 1.0-1.3g/lb to preserve muscle, moderate during bulk 0.8-1.0g/lb).
+   - Fat: set floor (minimum 0.3g/lb for hormonal health), then percentage-based allocation.
+   - Carbs: fill remainder, explain why carbs matter for training performance.
+
+3. TRAINING DAY vs REST DAY SPLITS
+   - Provide two sets of macro targets: training days (higher carb, fuel performance) and rest days (lower carb, reduce surplus/increase deficit).
+   - Show exact grams for each macro on each day type.
+   - Keep weekly calorie average aligned with the phase goal.
+
+4. PER-MEAL MACRO DISTRIBUTION
+   - Based on ${profile.mealsPerDay ?? 4} meals/day, distribute macros with emphasis on:
+     - Pre-training: carb-focused for fuel
+     - Post-training: protein + carb for recovery
+     - Other meals: balanced
+   - Show exact gram targets per meal slot (not food suggestions — just numbers).
+
+5. ADJUSTMENT TRIGGERS & PROTOCOL
+   - When to adjust macros: bodyweight stalls (2+ weeks), energy drops, recovery declining, strength plateaus.
+   - How to adjust: specific calorie/macro changes (e.g., "add 150 kcal from carbs if weight stalls during bulk for 2 weeks").
+   - Reverse diet protocol: how to transition out of a cut (weekly calorie increases).
+   - When to switch phases entirely based on check-in trends.
+
+6. PHASE TRANSITION CRITERIA
+   - Bulk → Cut: signs it's time (rate of weight gain too fast, bf% threshold).
+   - Cut → Maintain: signs to stop cutting (strength loss, recovery tanking, energy consistently low).
+   - Maintain → Bulk: readiness indicators.
+   - Minimum phase durations for each.
+
+${checkInData ? `7. TREND ANALYSIS & CURRENT RECOMMENDATIONS
+   - Analyze the check-in data above for bodyweight trends, energy patterns, and recovery.
+   - Based on trends, recommend whether current macros should be adjusted and by how much.
+   - Flag any red flags (rapid weight change, poor recovery, low energy).` : ""}
+
+IMPORTANT RULES:
+- NO meal plans. NO food suggestions. NO recipes. ONLY macro numbers, rationale, and protocols.
+- Show all calculations and reasoning.
+- Use the athlete's actual stats — do not use generic examples.
+- If check-in data shows concerning trends, call them out directly.
+- Be specific with numbers. "Increase protein" is not acceptable — "Increase protein from 180g to 200g" is.`;
+}
+
 export function buildRecompPrompt(
   profile: UserProfile,
   bodyFatPercent?: number

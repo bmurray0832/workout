@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { db, getUserProfile } from "@/lib/db";
-import { buildProgramPrompt, buildPlateauPrompt, buildWeakPointPrompt, buildRecoveryPrompt, buildInjuryPreventionPrompt, buildTrackerPrompt, buildRecompPrompt } from "@/lib/prompts";
+import { buildProgramPrompt, buildPlateauPrompt, buildWeakPointPrompt, buildRecoveryPrompt, buildInjuryPreventionPrompt, buildTrackerPrompt, buildRecompPrompt, buildMacroGuidePrompt } from "@/lib/prompts";
 
-export type PromptType = "program" | "plateau" | "weakpoint" | "recovery" | "injury" | "tracker" | "recomp";
+export type PromptType = "program" | "plateau" | "weakpoint" | "recovery" | "injury" | "tracker" | "recomp" | "macroguide";
 
 export async function POST(req: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -60,6 +60,11 @@ export async function POST(req: NextRequest) {
     case "recomp":
       prompt = buildRecompPrompt(profile, options.bodyFatPercent as number | undefined);
       break;
+    case "macroguide": {
+      const recentCheckIns = await db.weeklyCheckIn.findMany({ take: 8, orderBy: { date: "desc" } });
+      prompt = buildMacroGuidePrompt(profile, recentCheckIns);
+      break;
+    }
     default:
       return NextResponse.json({ error: "Unknown prompt type" }, { status: 400 });
   }

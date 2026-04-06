@@ -37,6 +37,7 @@ const TOOLS: { type: PromptType; label: string; description: string; icon: strin
   { type: "injury", label: "Injury Prevention", description: "Prehab & movement quality", icon: "🛡️" },
   { type: "tracker", label: "Progress Analysis", description: "Data-driven adjustments", icon: "📊" },
   { type: "recomp", label: "Recomp Strategy", description: "Build muscle, lose fat", icon: "⚡" },
+  { type: "macroguide", label: "Macro Planning Guide", description: "Phase-aware macro targets & adjustments", icon: "🔢" },
 ];
 
 export default function Dashboard() {
