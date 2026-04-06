@@ -29,14 +29,14 @@ type Program = {
   createdAt: string;
 };
 
-const TOOLS: { type: PromptType; label: string; description: string; icon: string }[] = [
-  { type: "program", label: "Generate Program", description: "12-week periodized plan", icon: "⛹️" },
-  { type: "plateau", label: "Fix a Plateau", description: "8-week breakthrough plan", icon: "📈" },
-  { type: "weakpoint", label: "Weak Point Diagnosis", description: "Find and fix the gaps", icon: "🎯" },
-  { type: "recovery", label: "Recovery Protocol", description: "Sleep, mobility, deloads", icon: "😴" },
-  { type: "injury", label: "Injury Prevention", description: "Prehab & movement quality", icon: "🛡️" },
-  { type: "tracker", label: "Progress Analysis", description: "Data-driven adjustments", icon: "📊" },
-  { type: "recomp", label: "Recomp Strategy", description: "Build muscle, lose fat", icon: "⚡" },
+const TOOLS: { type: PromptType; label: string; description: string }[] = [
+  { type: "program", label: "Generate Program", description: "12-week periodized plan" },
+  { type: "plateau", label: "Fix a Plateau", description: "8-week breakthrough plan" },
+  { type: "weakpoint", label: "Weak Point Diagnosis", description: "Find and fix the gaps" },
+  { type: "recovery", label: "Recovery Protocol", description: "Sleep, mobility, deloads" },
+  { type: "injury", label: "Injury Prevention", description: "Prehab & movement quality" },
+  { type: "tracker", label: "Progress Analysis", description: "Data-driven adjustments" },
+  { type: "recomp", label: "Recomp Strategy", description: "Build muscle, lose fat" },
 ];
 
 export default function Dashboard() {
@@ -107,43 +107,43 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-zinc-400">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <header className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-black text-white">
+      <header className="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold">FitAI</h1>
           {profile && (
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-zinc-400">
               {profile.name} · {profile.weightLbs}lbs · {profile.age}yo · Goal: {profile.primaryGoal}
             </p>
           )}
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => router.push("/history")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">History</button>
-          <button onClick={() => router.push("/nutrition")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">🥗 Nutrition</button>
-          <button onClick={() => router.push("/equipment")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">⛹️ Equipment</button>
+          <button onClick={() => router.push("/history")} className="text-xs text-zinc-400 hover:text-white border border-zinc-700 px-3 py-1.5 rounded-lg transition-colors">History</button>
+          <button onClick={() => router.push("/nutrition")} className="text-xs text-zinc-400 hover:text-white border border-zinc-700 px-3 py-1.5 rounded-lg transition-colors">Nutrition</button>
+          <button onClick={() => router.push("/equipment")} className="text-xs text-zinc-400 hover:text-white border border-zinc-700 px-3 py-1.5 rounded-lg transition-colors">Equipment</button>
           <button
             onClick={() => router.push("/checkin")}
             className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors border ${
               checkIn === null || checkIn.daysAgo >= 7
                 ? "bg-orange-600 hover:bg-orange-500 text-white border-orange-500"
-                : "text-gray-400 hover:text-white border-gray-700"
+                : "text-zinc-400 hover:text-white border-zinc-700"
             }`}
           >
             {checkIn === null ? "Check In" : checkIn.daysAgo === 0 ? "✓ Checked In" : `Check In (${checkIn.daysAgo}d ago)`}
           </button>
-          <button onClick={() => router.push("/log")} className="text-xs bg-blue-600 hover:bg-blue-500 text-white font-medium px-3 py-1.5 rounded-lg transition-colors">+ Log Session</button>
-          <button onClick={() => router.push("/onboarding")} className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-colors">Profile</button>
+          <button onClick={() => router.push("/log")} className="text-xs bg-amber-500 hover:bg-amber-400 text-white font-medium px-3 py-1.5 rounded-lg transition-colors">+ Log Session</button>
+          <button onClick={() => router.push("/onboarding")} className="text-xs text-zinc-400 hover:text-white border border-zinc-700 px-3 py-1.5 rounded-lg transition-colors">Profile</button>
         </div>
       </header>
 
-      <div className="border-b border-gray-800 px-6 py-3 flex items-center gap-4 overflow-x-auto">
+      <div className="border-b border-zinc-800 px-6 py-3 flex items-center gap-4 overflow-x-auto">
         {checkIn ? (
           <>
             <StatusChip label="Weight" value={`${checkIn.bodyweightLbs}lbs`} sub={checkIn.daysAgo === 0 ? "today" : `${checkIn.daysAgo}d ago`} />
@@ -151,39 +151,38 @@ export default function Dashboard() {
             <StatusChip label="Recovery" value={`${checkIn.recoveryScore}/10`} />
           </>
         ) : (
-          <p className="text-xs text-gray-500">No check-ins yet — <button onClick={() => router.push("/checkin")} className="text-blue-400 hover:underline">log your first one</button></p>
+          <p className="text-xs text-zinc-500">No check-ins yet — <button onClick={() => router.push("/checkin")} className="text-amber-400 hover:underline">log your first one</button></p>
         )}
         {plateauCount > 0 && (
           <button onClick={() => router.push("/plateaus")} className="ml-auto shrink-0 text-xs bg-orange-900 border border-orange-700 text-orange-300 px-3 py-1.5 rounded-lg hover:bg-orange-800 transition-colors">
-            ⚠️ {plateauCount} plateau{plateauCount > 1 ? "s" : ""} detected — view
+            {plateauCount} plateau{plateauCount > 1 ? "s" : ""} detected — view
           </button>
         )}
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-3">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">AI Tools</h2>
+          <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">AI Tools</h2>
           {TOOLS.map((tool) => (
             <button
               key={tool.type}
               onClick={() => handleGenerate(tool.type)}
               disabled={generating}
               className={`w-full text-left p-4 rounded-xl border transition-all ${
-                activeType === tool.type ? "border-blue-500 bg-blue-950" : "border-gray-800 bg-gray-900 hover:border-gray-600"
+                activeType === tool.type ? "border-amber-500 bg-amber-950" : "border-zinc-800 bg-zinc-950 hover:border-zinc-600"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               <div className="flex items-center gap-3">
-                <span className="text-2xl">{tool.icon}</span>
                 <div>
                   <div className="text-sm font-medium">{tool.label}</div>
-                  <div className="text-xs text-gray-400">{tool.description}</div>
+                  <div className="text-xs text-zinc-400">{tool.description}</div>
                 </div>
               </div>
             </button>
           ))}
           {profile?.injuryNotes && (
             <div className="mt-4 p-3 bg-yellow-950 border border-yellow-800 rounded-lg">
-              <p className="text-xs text-yellow-300 font-medium">⚠️ Injury on file</p>
+              <p className="text-xs text-yellow-300 font-medium">Injury on file</p>
               <p className="text-xs text-yellow-400 mt-1">{profile.injuryNotes}</p>
               <p className="text-xs text-yellow-500 mt-1">All prompts are injury-aware.</p>
             </div>
@@ -193,12 +192,12 @@ export default function Dashboard() {
         <div className="lg:col-span-2 space-y-4">
           <Coach />
           {streamedContent ? (
-            <div className="bg-gray-900 border border-gray-800 rounded-xl">
-              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800">
+            <div className="bg-zinc-950 border border-zinc-800 rounded-xl">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800">
                 <span className="text-sm font-medium">
                   {generating ? (
                     <span className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                      <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
                       Generating...
                     </span>
                   ) : (
@@ -206,19 +205,19 @@ export default function Dashboard() {
                   )}
                 </span>
                 {!generating && (
-                  <button onClick={() => navigator.clipboard.writeText(streamedContent)} className="text-xs text-gray-400 hover:text-white">Copy</button>
+                  <button onClick={() => navigator.clipboard.writeText(streamedContent)} className="text-xs text-zinc-400 hover:text-white">Copy</button>
                 )}
               </div>
-              <div ref={contentRef} className="p-5 max-h-[600px] overflow-y-auto text-sm text-gray-200 whitespace-pre-wrap leading-relaxed font-mono">
+              <div ref={contentRef} className="p-5 max-h-[600px] overflow-y-auto text-sm text-zinc-200 whitespace-pre-wrap leading-relaxed font-mono">
                 {streamedContent}
                 {generating && <span className="animate-pulse">▌</span>}
               </div>
             </div>
           ) : program ? (
-            <div className="bg-gray-900 border border-gray-800 rounded-xl">
-              <div className="px-5 py-4 border-b border-gray-800">
+            <div className="bg-zinc-950 border border-zinc-800 rounded-xl">
+              <div className="px-5 py-4 border-b border-zinc-800">
                 <h3 className="font-semibold">{program.name}</h3>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-zinc-400 mt-1">
                   {program.weeks} weeks · {program.startDate
                     ? (() => {
                         const week = Math.min(Math.ceil((Date.now() - new Date(program.startDate).getTime()) / (7 * 24 * 60 * 60 * 1000)), program.weeks);
@@ -227,13 +226,13 @@ export default function Dashboard() {
                     : "Not started"}
                 </p>
               </div>
-              <div className="p-5 max-h-[600px] overflow-y-auto text-sm text-gray-200 whitespace-pre-wrap leading-relaxed">{program.content}</div>
+              <div className="p-5 max-h-[600px] overflow-y-auto text-sm text-zinc-200 whitespace-pre-wrap leading-relaxed">{program.content}</div>
             </div>
           ) : (
-            <div className="bg-gray-900 border border-gray-800 rounded-xl h-64 flex flex-col items-center justify-center text-center p-8">
-              <p className="text-gray-400 text-sm mb-4">No program generated yet.</p>
-              <button onClick={() => handleGenerate("program")} disabled={generating} className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
-                ⛹️ Generate My 12-Week Program
+            <div className="bg-zinc-950 border border-zinc-800 rounded-xl h-64 flex flex-col items-center justify-center text-center p-8">
+              <p className="text-zinc-400 text-sm mb-4">No program generated yet.</p>
+              <button onClick={() => handleGenerate("program")} disabled={generating} className="bg-amber-500 hover:bg-amber-400 disabled:bg-zinc-900 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
+                Generate My 12-Week Program
               </button>
             </div>
           )}
@@ -246,9 +245,9 @@ export default function Dashboard() {
 function StatusChip({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="flex items-center gap-2 shrink-0">
-      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-xs text-zinc-500">{label}</span>
       <span className="text-xs font-medium text-white">{value}</span>
-      {sub && <span className="text-xs text-gray-600">{sub}</span>}
+      {sub && <span className="text-xs text-zinc-600">{sub}</span>}
     </div>
   );
 }

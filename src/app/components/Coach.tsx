@@ -61,47 +61,47 @@ export default function Coach() {
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+    <div className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold">Daily Coach</span>
-          <span className="text-xs text-gray-500">{today}</span>
+          <span className="text-xs text-zinc-500">{today}</span>
         </div>
         <div className="flex items-center gap-2">
           {lastRefreshed && (
-            <span className={`text-xs ${Date.now() - lastRefreshed.getTime() > 4 * 60 * 60 * 1000 ? "text-yellow-600" : "text-gray-600"}`}>
-              {Date.now() - lastRefreshed.getTime() > 4 * 60 * 60 * 1000 ? "⚠️ " : ""}{formatTimeAgo(lastRefreshed)}
+            <span className={`text-xs ${Date.now() - lastRefreshed.getTime() > 4 * 60 * 60 * 1000 ? "text-yellow-600" : "text-zinc-600"}`}>
+              {Date.now() - lastRefreshed.getTime() > 4 * 60 * 60 * 1000 ? "stale — " : ""}{formatTimeAgo(lastRefreshed)}
             </span>
           )}
-          <button onClick={fetchBriefing} disabled={state === "loading"} className="text-xs text-gray-400 hover:text-white transition-colors disabled:opacity-40">
-            {state === "loading" ? <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />Thinking...</span> : "↻ Refresh"}
+          <button onClick={fetchBriefing} disabled={state === "loading"} className="text-xs text-zinc-400 hover:text-white transition-colors disabled:opacity-40">
+            {state === "loading" ? <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />Thinking...</span> : "↻ Refresh"}
           </button>
         </div>
       </div>
 
-      <div ref={contentRef} className="divide-y divide-gray-800">
+      <div ref={contentRef} className="divide-y divide-zinc-800">
         {state === "loading" && briefing === "" && (
-          <div className="px-4 py-6 flex items-center gap-3 text-gray-400 text-sm">
+          <div className="px-4 py-6 flex items-center gap-3 text-zinc-400 text-sm">
             <span className="flex gap-1">
-              <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </span>
             Reading your data...
           </div>
         )}
-        {state === "error" && <div className="px-4 py-4 text-sm text-red-400">Couldn’t load briefing. Check your API key.</div>}
+        {state === "error" && <div className="px-4 py-4 text-sm text-red-400">Couldn't load briefing. Check your API key.</div>}
         {sections.length > 0
           ? sections.map((section) => <CoachSection key={section.title} title={section.title} body={section.body} />)
           : briefing && state !== "done" && (
-              <div className="px-4 py-3 text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
+              <div className="px-4 py-3 text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed">
                 {briefing}{state === "loading" && <span className="animate-pulse">▌</span>}
               </div>
             )}
       </div>
 
       {state === "done" && (
-        <div className="px-4 py-3 border-t border-gray-800 flex gap-2 flex-wrap">
+        <div className="px-4 py-3 border-t border-zinc-800 flex gap-2 flex-wrap">
           <ActionChip label="Log Session" onClick={() => router.push("/log")} />
           <ActionChip label="Check In" onClick={() => router.push("/checkin")} />
           <ActionChip label="Nutrition" onClick={() => router.push("/nutrition")} />
@@ -112,25 +112,19 @@ export default function Coach() {
 }
 
 function CoachSection({ title, body }: { title: string; body: string }) {
-  const icons: Record<string, string> = {
-    "Today's Outlook": "📅",
-    "Recovery Read": "😴",
-    "Nutrition Today": "🥗",
-    "Goal Pulse": "🎯",
-  };
   return (
     <div className="px-4 py-3">
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-        <span>{icons[title] ?? "•"}</span>{title}
+      <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+        {title}
       </p>
-      <p className="text-sm text-gray-200 leading-relaxed">{body}</p>
+      <p className="text-sm text-zinc-200 leading-relaxed">{body}</p>
     </div>
   );
 }
 
 function ActionChip({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="text-xs bg-gray-800 hover:bg-gray-700 border border-gray-700 px-3 py-1.5 rounded-full transition-colors">
+    <button onClick={onClick} className="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 px-3 py-1.5 rounded-full transition-colors">
       {label}
     </button>
   );
