@@ -3,6 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { db, getUserProfile } from "@/lib/db";
 import { buildProgramPrompt, buildPlateauPrompt, buildWeakPointPrompt, buildRecoveryPrompt, buildInjuryPreventionPrompt, buildTrackerPrompt, buildRecompPrompt } from "@/lib/prompts";
 
+export const dynamic = "force-dynamic";
+
 export type PromptType = "program" | "plateau" | "weakpoint" | "recovery" | "injury" | "tracker" | "recomp";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
